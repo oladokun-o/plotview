@@ -1,0 +1,135 @@
+{
+  "site": {
+    "name": "Sample Memorial Gardens",
+    "currency": "USD",
+    "width": 1000,
+    "height": 800
+  },
+  "landmarks": [
+    { "id": "main-gate", "label": "Main gate", "x": 440, "y": 750, "width": 120, "height": 30 },
+    { "id": "chapel", "label": "Chapel", "x": 430, "y": 80, "width": 140, "height": 90 },
+    { "id": "office", "label": "Office", "x": 850, "y": 650, "width": 100, "height": 70 }
+  ],
+  "paths": [
+    { "id": "gate-to-chapel", "points": [[500, 765], [500, 450], [500, 170]] },
+    { "id": "central-to-office", "points": [[500, 450], [850, 450], [850, 650]] }
+  ],
+  "sections": [
+    {
+      "id": "A",
+      "name": "Garden of Peace",
+      "x": 80,
+      "y": 200,
+      "rows": 4,
+      "cols": 3,
+      "plotSize": 40,
+      "gap": 8,
+      "plots": [
+        { "id": "A-1", "row": 1, "col": 1, "status": "available", "basePrice": 800 },
+        { "id": "A-2", "row": 1, "col": 2, "status": "available", "basePrice": 800 },
+        { "id": "A-3", "row": 1, "col": 3, "status": "available", "basePrice": 800 },
+        { "id": "A-4", "row": 2, "col": 1, "status": "reserved", "basePrice": 800 },
+        { "id": "A-5", "row": 2, "col": 2, "status": "available", "basePrice": 800 },
+        { "id": "A-6", "row": 2, "col": 3, "status": "occupied", "basePrice": 800 },
+        { "id": "A-7", "row": 3, "col": 1, "status": "available", "basePrice": 800 },
+        { "id": "A-8", "row": 3, "col": 2, "status": "available", "basePrice": 800 },
+        { "id": "A-9", "row": 3, "col": 3, "status": "reserved", "basePrice": 800 },
+        { "id": "A-10", "row": 4, "col": 1, "status": "available", "basePrice": 800 },
+        { "id": "A-11", "row": 4, "col": 2, "status": "available", "basePrice": 800 },
+        { "id": "A-12", "row": 4, "col": 3, "status": "occupied", "basePrice": 800 }
+      ]
+    },
+    {
+      "id": "B",
+      "name": "Garden of Serenity",
+      "x": 280,
+      "y": 200,
+      "rows": 4,
+      "cols": 3,
+      "plotSize": 40,
+      "gap": 8,
+      "plots": [
+        { "id": "B-1", "row": 1, "col": 1, "status": "available", "basePrice": 950 },
+        { "id": "B-2", "row": 1, "col": 2, "status": "available", "basePrice": 950 },
+        { "id": "B-3", "row": 1, "col": 3, "status": "reserved", "basePrice": 950 },
+        { "id": "B-4", "row": 2, "col": 1, "status": "available", "basePrice": 950 },
+        { "id": "B-5", "row": 2, "col": 2, "status": "occupied", "basePrice": 950 },
+        { "id": "B-6", "row": 2, "col": 3, "status": "available", "basePrice": 950 },
+        { "id": "B-7", "row": 3, "col": 1, "status": "available", "basePrice": 950 },
+        { "id": "B-8", "row": 3, "col": 2, "status": "occupied", "basePrice": 950 },
+        { "id": "B-9", "row": 3, "col": 3, "status": "available", "basePrice": 950 },
+        { "id": "B-10", "row": 4, "col": 1, "status": "reserved", "basePrice": 950 },
+        { "id": "B-11", "row": 4, "col": 2, "status": "occupied", "basePrice": 950 },
+        { "id": "B-12", "row": 4, "col": 3, "status": "available", "basePrice": 950 }
+      ]
+    },
+    {
+      "id": "C",
+      "name": "Garden of Remembrance",
+      "x": 560,
+      "y": 200,
+      "rows": 4,
+      "cols": 3,
+      "plotSize": 40,
+      "gap": 8,
+      "plots": [
+        { "id": "C-1", "row": 1, "col": 1, "status": "available", "basePrice": 1150 },
+        { "id": "C-2", "row": 1, "col": 2, "status": "reserved", "basePrice": 1150 },
+        { "id": "C-3", "row": 1, "col": 3, "status": "available", "basePrice": 1150 },
+        { "id": "C-4", "row": 2, "col": 1, "status": "occupied", "basePrice": 1150 },
+        { "id": "C-5", "row": 2, "col": 2, "status": "available", "basePrice": 1150 },
+        { "id": "C-6", "row": 2, "col": 3, "status": "available", "basePrice": 1150 },
+        { "id": "C-7", "row": 3, "col": 1, "status": "reserved", "basePrice": 1150 },
+        { "id": "C-8", "row": 3, "col": 2, "status": "available", "basePrice": 1150 },
+        { "id": "C-9", "row": 3, "col": 3, "status": "occupied", "basePrice": 1150 },
+        { "id": "C-10", "row": 4, "col": 1, "status": "available", "basePrice": 1150 },
+        { "id": "C-11", "row": 4, "col": 2, "status": "available", "basePrice": 1150 },
+        { "id": "C-12", "row": 4, "col": 3, "status": "occupied", "basePrice": 1150 }
+      ]
+    },
+    {
+      "id": "D",
+      "name": "Garden of Reflection",
+      "x": 760,
+      "y": 200,
+      "rows": 4,
+      "cols": 3,
+      "plotSize": 40,
+      "gap": 8,
+      "plots": [
+        { "id": "D-1", "row": 1, "col": 1, "status": "available", "basePrice": 1400 },
+        { "id": "D-2", "row": 1, "col": 2, "status": "occupied", "basePrice": 1400 },
+        { "id": "D-3", "row": 1, "col": 3, "status": "available", "basePrice": 1400 },
+        { "id": "D-4", "row": 2, "col": 1, "status": "available", "basePrice": 1400 },
+        { "id": "D-5", "row": 2, "col": 2, "status": "occupied", "basePrice": 1400 },
+        { "id": "D-6", "row": 2, "col": 3, "status": "reserved", "basePrice": 1400 },
+        { "id": "D-7", "row": 3, "col": 1, "status": "available", "basePrice": 1400 },
+        { "id": "D-8", "row": 3, "col": 2, "status": "available", "basePrice": 1400 },
+        { "id": "D-9", "row": 3, "col": 3, "status": "occupied", "basePrice": 1400 },
+        { "id": "D-10", "row": 4, "col": 1, "status": "available", "basePrice": 1400 },
+        { "id": "D-11", "row": 4, "col": 2, "status": "occupied", "basePrice": 1400 },
+        { "id": "D-12", "row": 4, "col": 3, "status": "available", "basePrice": 1400 }
+      ]
+    }
+  ],
+  "packages": [
+    {
+      "id": "single",
+      "name": "Single plot",
+      "description": "One resting place.",
+      "priceMultiplier": 1
+    },
+    {
+      "id": "companion",
+      "name": "Companion plot",
+      "description": "Two resting places side by side, for partners or spouses.",
+      "priceMultiplier": 1.8
+    },
+    {
+      "id": "family",
+      "name": "Family vault",
+      "description": "A shared vault for multiple family members.",
+      "priceMultiplier": 3.2
+    }
+  ]
+}
