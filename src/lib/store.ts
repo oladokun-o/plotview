@@ -1,0 +1,118 @@
+import { useSyncExternalStore } from "react"
+
+/**
+ * Client state for the whole app, with no dependencies.
+ *
+ * Preferences (view, filter) persist to localStorage. The selected plot is not
+ * persisted here: it lives in the URL (see useSelectedPlotUrl) so a selection
+ * can be shared as a link.
+ *
+ * During server rendering and hydration every reader sees DEFAULT_STATE, then
+ * re-renders with the stored preferences, so there is never a hydration mismatch.
+ */
+
+export type MapView = "grid" | "sitemap"
+
+export interface AppState {
+  view: MapView
+  availableOnly: boolean
+  selectedPlotId: string | null
+}
+
+type Preferences = Pick<AppState, "view" | "availableOnly">
+
+const STORAGE_KEY = "plotview:preferences:v1"
+
+const DEFAULT_STATE: AppState = {
+  view: "grid",
+  availableOnly: false,
+  selectedPlotId: null,
+}
+
+let state: AppState = DEFAULT_STATE
+let hydrated = false
+const listeners = new Set<() => void>()
+
+function readPreferences(): Partial<Preferences> {
+  try {
+    const raw = window.localStorage.getItem(STORAGE_KEY)
+    if (!raw) {
+      return {}
+    }
+    const parsed: unknown = JSON.parse(raw)
+    if (typeof parsed !== "object" || parsed === null) {
+      return {}
+    }
+    const record = parsed as Record<string, unknown>
+    const preferences: Partial<Preferences> = {}
+    if (record.view === "grid" || record.view === "sitemap") {
+      preferences.view = record.view
+    }
+    if (typeof record.availableOnly === "boolean") {
+      preferences.availableOnly = record.availableOnly
+    }
+    return preferences
+  } catch {
+    return {}
+  }
+}
+
+function writePreferences(): void {
+  try {
+    const preferences: Preferences = { view: state.view, availableOnly: state.availableOnly }
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(preferences))
+  } catch {
+    // Storage can be unavailable (private mode, blocked); preferences then last for the visit only.
+  }
+}
+
+function ensureHydrated(): void {
+  if (hydrated || typeof window === "undefined") {
+    return
+  }
+  hydrated = true
+  state = { ...state, ...readPreferences() }
+}
+
+function setState(patch: Partial<AppState>): void {
+  ensureHydrated()
+  state = { ...state, ...patch }
+  if ("view" in patch || "availableOnly" in patch) {
+    writePreferences()
+  }
+  listeners.forEach((listener) => listener())
+}
+
+function subscribe(listener: () => void): () => void {
+  listeners.add(listener)
+  return () => listeners.delete(listener)
+}
+
+/** Reads a slice of app state. The selector must return a primitive or a stable reference. */
+export function useAppState<T>(selector: (state: AppState) => T): T {
+  return useSyncExternalStore(
+    subscribe,
+    () => {
+      ensureHydrated()
+      return selector(state)
+    },
+    () => selector(DEFAULT_STATE),
+  )
+}
+
+export function getAppState(): AppState {
+  ensureHydrated()
+  return state
+}
+
+export const appActions = {
+  setView(view: MapView) {
+    setState({ view })
+  },
+  setAvailableOnly(availableOnly: boolean) {
+    setState({ availableOnly })
+  },
+  selectPlot(plotId: string | null) {
+    setState({ selectedPlotId: plotId })
+  },
+}
