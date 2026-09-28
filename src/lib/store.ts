@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from "react"
+import type { PaymentMethodId, PaymentReceipt } from "./payments/types"
 
 /**
  * Client state for the whole app, with no dependencies.
@@ -31,6 +32,9 @@ export interface Reservation {
   step: ReserveStep
   /** Issued when the invoice step is first reached, then kept. */
   invoiceNumber: string | null
+  paymentMethod: PaymentMethodId
+  /** Set once payment succeeds. Card details are never kept, only the receipt. */
+  receipt: PaymentReceipt | null
 }
 
 export interface AppState {
@@ -146,7 +150,7 @@ export const appActions = {
     setState({ selectedPlotId: plotId, reservation })
   },
   startReservation(plotId: string) {
-    setState({ reservation: { plotId, step: "package", invoiceNumber: null } })
+    setState({ reservation: { plotId, step: "package", invoiceNumber: null, paymentMethod: "mtn-momo", receipt: null } })
   },
   goToReserveStep(step: ReserveStep) {
     if (state.reservation) {
@@ -156,6 +160,16 @@ export const appActions = {
   issueInvoiceNumber(invoiceNumber: string) {
     if (state.reservation && !state.reservation.invoiceNumber) {
       setState({ reservation: { ...state.reservation, invoiceNumber } })
+    }
+  },
+  choosePaymentMethod(paymentMethod: PaymentMethodId) {
+    if (state.reservation) {
+      setState({ reservation: { ...state.reservation, paymentMethod } })
+    }
+  },
+  recordPayment(receipt: PaymentReceipt) {
+    if (state.reservation) {
+      setState({ reservation: { ...state.reservation, receipt } })
     }
   },
   endReservation() {

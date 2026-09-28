@@ -113,7 +113,8 @@
 
   --text-primary: var(--stone-900);
   --text-secondary: var(--stone-600);
-  --text-tertiary: var(--stone-500);
+  /* Darker than stone-500 so placeholders and fine print keep 4.5:1 on every light surface. */
+  --text-tertiary: color-mix(in oklab, var(--stone-500) 60%, var(--stone-700));
   --text-inverse: var(--stone-50);
 
   --border-subtle: var(--stone-200);
