@@ -2,7 +2,7 @@
 
 import { ArrowLeft, X } from "lucide-react"
 import { AnimatePresence, m } from "motion/react"
-import { useId, useState } from "react"
+import { useCallback, useId, useState } from "react"
 import type { PlotDetailsModel } from "@/components/panel/types"
 import { Button } from "@/components/ui/Button"
 import { IconButton } from "@/components/ui/IconButton"
@@ -13,6 +13,7 @@ import type { Package } from "@/types/layout"
 import { DetailsStep } from "./DetailsStep"
 import { InvoiceStep } from "./InvoiceStep"
 import { PackageStep } from "./PackageStep"
+import { PaymentStep, type PaymentStatus } from "./PaymentStep"
 import { StepIndicator } from "./StepIndicator"
 
 interface ReserveFlowProps {
@@ -21,7 +22,6 @@ interface ReserveFlowProps {
   buyer: BuyerDetails
   selectedPackage: Package
   onSelectPackage: (packageId: string) => void
-  onProceedToPayment: () => void
   onClose: () => void
 }
 
@@ -43,7 +43,6 @@ export function ReserveFlow({
   buyer,
   selectedPackage,
   onSelectPackage,
-  onProceedToPayment,
   onClose,
 }: ReserveFlowProps) {
   const { plot, section, packages, currency } = model
@@ -58,6 +57,11 @@ export function ReserveFlow({
     setShownIndex(stepIndex)
   }
   const total = plot.basePrice * selectedPackage.priceMultiplier
+  const paymentFormId = `${formId}-payment`
+  const [paymentStatus, setPaymentStatus] = useState<PaymentStatus>("idle")
+  const handlePaymentStatus = useCallback((status: PaymentStatus) => setPaymentStatus(status), [])
+  // Once money is moving (or has moved) there is no going back to edit the invoice.
+  const canGoBack = step !== "payment" || paymentStatus === "idle"
 
   function goBack() {
     if (stepIndex === 0) {
@@ -82,6 +86,7 @@ export function ReserveFlow({
             size="sm"
             icon={<ArrowLeft aria-hidden="true" className="size-4" />}
             onClick={goBack}
+            disabled={!canGoBack}
             className="-ml-2"
           />
           <div className="min-w-0 flex-1">
@@ -138,6 +143,16 @@ export function ReserveFlow({
                 buyer={buyer}
               />
             )}
+            {step === "payment" && (
+              <PaymentStep
+                formId={paymentFormId}
+                reservation={reservation}
+                amount={total}
+                currency={currency}
+                buyerPhone={buyer.phone}
+                onStatusChange={handlePaymentStatus}
+              />
+            )}
           </m.div>
         </AnimatePresence>
       </div>
@@ -158,8 +173,13 @@ export function ReserveFlow({
           </Button>
         )}
         {step === "invoice" && (
-          <Button size="lg" onClick={onProceedToPayment}>
+          <Button size="lg" onClick={() => appActions.goToReserveStep("payment")}>
             Proceed to payment
+          </Button>
+        )}
+        {step === "payment" && paymentStatus === "idle" && (
+          <Button size="lg" type="submit" form={paymentFormId}>
+            Pay {formatPrice(total, currency)}
           </Button>
         )}
       </div>

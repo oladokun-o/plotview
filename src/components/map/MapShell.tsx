@@ -408,10 +408,6 @@ export function MapShell({ layout, branding }: MapShellProps) {
     }
   }
 
-  function handleProceedToPayment() {
-    // Payment is the next step of the flow (phase 7).
-  }
-
   // Warm the deferred chunks once the page is idle, so the first selection or view switch never waits.
   useEffect(() => {
     if ("requestIdleCallback" in window) {
@@ -618,7 +614,6 @@ export function MapShell({ layout, branding }: MapShellProps) {
           onSelectPackage={appActions.selectPackage}
           onViewPlot={handleViewPlot}
           onReserve={handleReserve}
-          onProceedToPayment={handleProceedToPayment}
           onClose={() => appActions.selectPlot(null)}
         />
       ) : (
@@ -631,7 +626,6 @@ export function MapShell({ layout, branding }: MapShellProps) {
           onSelectPackage={appActions.selectPackage}
           onViewPlot={handleViewPlot}
           onReserve={handleReserve}
-          onProceedToPayment={handleProceedToPayment}
           onClose={() => appActions.selectPlot(null)}
           onHeightChange={setSheetHeight}
         />
