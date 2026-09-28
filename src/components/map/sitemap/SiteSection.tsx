@@ -1,17 +1,17 @@
 import type { SectionPlacement } from "../mapGeometry"
-import { PlotShape } from "../PlotShape"
+import { PlotShape, type PlotInteractions } from "../PlotShape"
 
-interface SiteSectionProps {
+interface SiteSectionProps extends PlotInteractions {
   placement: SectionPlacement
   selectedPlotId: string | null
+  tabStopPlotId: string | null
   availableOnly: boolean
-  onSelectPlot: (plotId: string) => void
 }
 
 const BED_MARGIN = 12
 
 /** A section at its surveyed position and angle: a mown bed with its plots and name. */
-export function SiteSection({ placement, selectedPlotId, availableOnly, onSelectPlot }: SiteSectionProps) {
+export function SiteSection({ placement, selectedPlotId, tabStopPlotId, availableOnly, ...interactions }: SiteSectionProps) {
   const { section, width, height, plots } = placement
 
   return (
@@ -31,9 +31,11 @@ export function SiteSection({ placement, selectedPlotId, availableOnly, onSelect
         <PlotShape
           key={plot.plot.id}
           placement={plot}
+          sectionName={section.name}
           isSelected={plot.plot.id === selectedPlotId}
           isDimmed={availableOnly && plot.plot.status !== "available"}
-          onSelect={onSelectPlot}
+          isTabStop={plot.plot.id === tabStopPlotId}
+          {...interactions}
         />
       ))}
     </g>

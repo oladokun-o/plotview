@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useMemo, useRef } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent, type MouseEvent } from "react"
 import { SampleDataBadge } from "@/components/SampleDataBadge"
 import { cn } from "@/lib/cn"
 import type { Insets } from "@/lib/geometry"
@@ -17,7 +17,9 @@ import { Legend } from "./Legend"
 import type { MapGeometry } from "./mapGeometry"
 import { MapScene } from "./MapScene"
 import { MapViewport, type CameraApi } from "./MapViewport"
+import { PlotTooltip, type TooltipTarget } from "./PlotTooltip"
 import { SiteMapNote } from "./SiteMapNote"
+import { ARROW_DIRECTIONS, findNeighbour } from "./spatialNavigation"
 import { computeSiteLayout } from "./sitemap/siteLayout"
 import { TopBar } from "./TopBar"
 import { ViewToggle } from "./ViewToggle"
@@ -84,6 +86,40 @@ export function MapShell({ layout, branding }: MapShellProps) {
     [layout],
   )
 
+  const plotsById = useMemo(() => {
+    const entries = new Map<string, TooltipTarget>()
+    for (const section of layout.sections) {
+      for (const plot of section.plots) {
+        entries.set(plot.id, { plot, section })
+      }
+    }
+    return entries
+  }, [layout])
+
+  const fromMultiplier = useMemo(
+    () => Math.min(...layout.packages.map((pkg) => pkg.priceMultiplier)),
+    [layout],
+  )
+
+  // Keyboard: the map is one tab stop, and arrow keys move it between plots.
+  const [tabStopPlotId, setTabStopPlotId] = useState<string | null>(() => layout.sections[0]?.plots[0]?.id ?? null)
+  const [hoverPlotId, setHoverPlotId] = useState<string | null>(null)
+  const [focusPlotId, setFocusPlotId] = useState<string | null>(null)
+  const tooltipPlotId = hoverPlotId ?? focusPlotId
+  const sceneRef = useRef<SVGSVGElement>(null)
+
+  // Pan/zoom frames are broadcast to the tooltip only, so the map itself never re-renders per frame.
+  const transformListeners = useRef(new Set<() => void>())
+  const subscribeTransform = useCallback((listener: () => void) => {
+    transformListeners.current.add(listener)
+    return () => {
+      transformListeners.current.delete(listener)
+    }
+  }, [])
+  const handleTransform = useCallback(() => {
+    transformListeners.current.forEach((listener) => listener())
+  }, [])
+
   const camera = useRef<CameraApi | null>(null)
   const lastGeometry = useRef<MapGeometry | null>(null)
   const pendingFocus = useRef<string | null>(null)
@@ -139,13 +175,63 @@ export function MapShell({ layout, branding }: MapShellProps) {
     return () => cancelAnimationFrame(frame)
   }, [geometry, viewport])
 
+  // Escape clears the selection from anywhere except a text field (search handles its own Escape).
+  useEffect(() => {
+    function handleKeyDown(event: globalThis.KeyboardEvent) {
+      const inField = event.target instanceof HTMLElement && event.target.closest("input, textarea, select")
+      if (event.key === "Escape" && !inField && getAppState().selectedPlotId) {
+        appActions.selectPlot(null)
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [])
+
   function handleSelectPlot(plotId: string) {
     const deselect = getAppState().selectedPlotId === plotId
     appActions.selectPlot(deselect ? null : plotId)
+    setTabStopPlotId(plotId)
     const bounds = geometry.plotBounds.get(plotId)
     if (!deselect && bounds) {
       camera.current?.reveal(bounds)
     }
+  }
+
+  const handleFocusChange = useCallback(
+    (plotId: string | null, visible: boolean) => {
+      setFocusPlotId(visible ? plotId : null)
+      if (!plotId) {
+        return
+      }
+      setTabStopPlotId(plotId)
+      const bounds = geometry.plotBounds.get(plotId)
+      if (visible && bounds) {
+        camera.current?.reveal(bounds)
+      }
+    },
+    [geometry],
+  )
+
+  // A click anywhere on the map that is not on a plot clears the selection.
+  // Drags never reach here: the viewport swallows the click that ends a drag.
+  function handleMapClick(event: MouseEvent<HTMLDivElement>) {
+    if (!(event.target instanceof Element) || !event.target.closest("[data-plot-id]")) {
+      appActions.selectPlot(null)
+    }
+  }
+
+  function handleSceneKeyDown(event: KeyboardEvent<SVGSVGElement>) {
+    const direction = ARROW_DIRECTIONS[event.key]
+    const current = event.target instanceof Element ? event.target.closest("[data-plot-id]") : null
+    const fromId = current?.getAttribute("data-plot-id")
+    if (!direction || !fromId) {
+      return
+    }
+    event.preventDefault()
+    const nextId = findNeighbour(geometry, fromId, direction)
+    const next = nextId ? sceneRef.current?.querySelector<SVGGElement>(`[data-plot-id="${nextId}"]`) : null
+    // preventScroll: the map moves through its own camera, never by scrolling the page.
+    next?.focus({ preventScroll: true })
   }
 
   function handlePick(result: SearchResult) {
@@ -167,6 +253,7 @@ export function MapShell({ layout, branding }: MapShellProps) {
     <main className="relative h-dvh w-full overflow-hidden bg-canvas">
       <div
         ref={viewportRef}
+        onClick={handleMapClick}
         className={cn(
           "absolute inset-0 transition-colors duration-500 ease-standard",
           view === "sitemap" ? "bg-map-ground" : "bg-canvas",
@@ -178,16 +265,30 @@ export function MapShell({ layout, branding }: MapShellProps) {
           viewport={viewport}
           cameraRef={camera}
           label="Cemetery map. Drag to pan, pinch or scroll to zoom."
+          onTransform={handleTransform}
         >
           <MapScene
+            ref={sceneRef}
             layout={layout}
             geometry={geometry}
             view={view}
             selectedPlotId={selectedPlotId}
+            tabStopPlotId={selectedPlotId ?? tabStopPlotId}
             availableOnly={availableOnly}
-            onSelectPlot={handleSelectPlot}
+            onSelect={handleSelectPlot}
+            onHoverChange={setHoverPlotId}
+            onFocusChange={handleFocusChange}
+            onKeyDown={handleSceneKeyDown}
           />
         </MapViewport>
+        <PlotTooltip
+          target={tooltipPlotId ? (plotsById.get(tooltipPlotId) ?? null) : null}
+          fromMultiplier={fromMultiplier}
+          currency={layout.site.currency}
+          sceneRef={sceneRef}
+          subscribeTransform={subscribeTransform}
+          topLimit={insets.top - EDGE}
+        />
       </div>
 
       <div className="pointer-events-none absolute inset-x-0 top-0 z-10 grid grid-cols-[1fr_auto] items-start gap-2 p-3 md:grid-cols-[360px_1fr_auto] md:p-4">

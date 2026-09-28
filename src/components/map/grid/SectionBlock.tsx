@@ -1,17 +1,28 @@
 import type { SectionPlacement } from "../mapGeometry"
-import { PlotShape } from "../PlotShape"
-import { GRID_SECTION_PADDING } from "./gridLayout"
+import { PlotShape, type PlotInteractions } from "../PlotShape"
+import { AvailabilityBar } from "./AvailabilityBar"
+import { GRID_GAP, GRID_ROW_GUTTER, GRID_SECTION_HEADER, GRID_SECTION_PADDING, cellLength } from "./gridLayout"
 
-interface SectionBlockProps {
+interface SectionBlockProps extends PlotInteractions {
   placement: SectionPlacement
   selectedPlotId: string | null
+  tabStopPlotId: string | null
   availableOnly: boolean
-  onSelectPlot: (plotId: string) => void
 }
 
-export function SectionBlock({ placement, selectedPlotId, availableOnly, onSelectPlot }: SectionBlockProps) {
+/** A section as a card: name, availability at a glance, row numbers and its plots. */
+export function SectionBlock({
+  placement,
+  selectedPlotId,
+  tabStopPlotId,
+  availableOnly,
+  ...interactions
+}: SectionBlockProps) {
   const { section, width, height, plots } = placement
   const available = section.plots.filter((plot) => plot.status === "available").length
+  const reserved = section.plots.filter((plot) => plot.status === "reserved").length
+  const rowHeight = cellLength(section)
+  const plotsTop = GRID_SECTION_HEADER + GRID_SECTION_PADDING
 
   return (
     <g transform={`translate(${placement.x}, ${placement.y})`}>
@@ -23,24 +34,48 @@ export function SectionBlock({ placement, selectedPlotId, availableOnly, onSelec
         strokeWidth={1}
         vectorEffect="non-scaling-stroke"
       />
-      <text x={GRID_SECTION_PADDING} y={GRID_SECTION_PADDING + 12} className="fill-primary font-display text-[15px]">
+      <text x={GRID_SECTION_PADDING} y={GRID_SECTION_PADDING + 11} className="fill-primary font-display text-[16px]">
         {section.name}
       </text>
       <text
         x={width - GRID_SECTION_PADDING}
-        y={GRID_SECTION_PADDING + 12}
+        y={GRID_SECTION_PADDING + 11}
         textAnchor="end"
-        className="fill-tertiary text-[11px] tabular-nums"
+        className="fill-secondary text-[10.5px] tabular-nums"
       >
-        {`Section ${section.id} · ${available} available`}
+        {`${available} of ${section.plots.length} available`}
       </text>
+      <AvailabilityBar
+        x={GRID_SECTION_PADDING}
+        y={GRID_SECTION_PADDING + 22}
+        width={width - GRID_SECTION_PADDING * 2}
+        available={available}
+        reserved={reserved}
+        total={section.plots.length}
+      />
+      <g aria-hidden="true">
+        {Array.from({ length: section.rows }, (_, index) => (
+          <text
+            key={index}
+            x={GRID_SECTION_PADDING + GRID_ROW_GUTTER / 2 - 2}
+            y={plotsTop + index * (rowHeight + GRID_GAP) + rowHeight / 2}
+            textAnchor="middle"
+            dominantBaseline="central"
+            className="fill-tertiary text-[9px] tabular-nums"
+          >
+            {index + 1}
+          </text>
+        ))}
+      </g>
       {plots.map((plot) => (
         <PlotShape
           key={plot.plot.id}
           placement={plot}
+          sectionName={section.name}
           isSelected={plot.plot.id === selectedPlotId}
           isDimmed={availableOnly && plot.plot.status !== "available"}
-          onSelect={onSelectPlot}
+          isTabStop={plot.plot.id === tabStopPlotId}
+          {...interactions}
         />
       ))}
     </g>

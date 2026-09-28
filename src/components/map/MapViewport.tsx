@@ -34,6 +34,8 @@ interface MapViewportProps {
   viewport: Viewport
   cameraRef: RefObject<CameraApi | null>
   label: string
+  /** Called on every pan/zoom frame, including camera animations. */
+  onTransform?: () => void
   className?: string
   children: ReactNode
 }
@@ -42,7 +44,7 @@ const GLIDE_MS = 700
 const ZOOM_MS = 320
 const ZOOM_FACTOR = 1.6
 /** On screen, a revealed plot is at least this many pixels across its short side. */
-const REVEAL_MIN_SIZE = 22
+const REVEAL_MIN_SIZE = 14
 /** Pointer travel (px) after which a press counts as a drag, not a click. */
 const DRAG_THRESHOLD = 6
 
@@ -56,6 +58,7 @@ export function MapViewport({
   viewport,
   cameraRef,
   label,
+  onTransform,
   className,
   children,
 }: MapViewportProps) {
@@ -195,6 +198,7 @@ export function MapViewport({
         onPanning={markMoved}
         onWheelStart={markMoved}
         onPinchStart={markMoved}
+        onTransform={onTransform}
       >
         <TransformComponent
           wrapperStyle={{ width: "100%", height: "100%" }}

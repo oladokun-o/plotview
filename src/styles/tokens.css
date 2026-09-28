@@ -160,13 +160,14 @@
     --text-on-accent: var(--stone-950);
     --focus-ring: color-mix(in oklab, var(--brand) 40%, var(--stone-50));
 
-    --status-available-fill: var(--lichen-900);
+    /* Lifted off the dark surfaces so plots read as filled shapes, not outlines. */
+    --status-available-fill: color-mix(in oklab, var(--lichen-700) 70%, var(--stone-900));
     --status-available-edge: var(--lichen-500);
     --status-available-mark: var(--lichen-300);
-    --status-reserved-fill: var(--clay-900);
+    --status-reserved-fill: color-mix(in oklab, var(--clay-700) 62%, var(--stone-900));
     --status-reserved-edge: var(--clay-500);
     --status-reserved-mark: var(--clay-300);
-    --status-occupied-fill: var(--slate-900);
+    --status-occupied-fill: color-mix(in oklab, var(--slate-700) 55%, var(--stone-900));
     --status-occupied-edge: var(--slate-500);
     --status-occupied-mark: var(--slate-300);
 

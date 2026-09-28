@@ -1,25 +1,20 @@
 import type { MapGeometry } from "../mapGeometry"
+import type { PlotInteractions } from "../PlotShape"
 import { SectionBlock } from "./SectionBlock"
 
-interface GridViewProps {
+interface GridViewProps extends PlotInteractions {
   geometry: MapGeometry
   selectedPlotId: string | null
+  tabStopPlotId: string | null
   availableOnly: boolean
-  onSelectPlot: (plotId: string) => void
 }
 
 /** Sections as labelled blocks, plots in rows and columns. Needs no spatial data. */
-export function GridView({ geometry, selectedPlotId, availableOnly, onSelectPlot }: GridViewProps) {
+export function GridView({ geometry, ...shared }: GridViewProps) {
   return (
     <g>
       {geometry.sections.map((placement) => (
-        <SectionBlock
-          key={placement.section.id}
-          placement={placement}
-          selectedPlotId={selectedPlotId}
-          availableOnly={availableOnly}
-          onSelectPlot={onSelectPlot}
-        />
+        <SectionBlock key={placement.section.id} placement={placement} {...shared} />
       ))}
     </g>
   )
