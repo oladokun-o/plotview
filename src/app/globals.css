@@ -1,9 +1,26 @@
 @import "tailwindcss";
 
+/*
+ * Color roles — a memorial garden, not a dashboard. Status reads through
+ * material, not a traffic-light palette:
+ *   available -> lichen   (soft living green, open ground)
+ *   reserved  -> clay     (a small ochre marker, a temporary hold)
+ *   occupied  -> slate    (weathered stone, permanent)
+ * Brand (moss, from branding.json) is reserved for selection and focus only.
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f4f2ed;
+  --foreground: #262a22;
   --brand: #2f5233;
+
+  --surface-raised: #fbfaf7;
+  --border-neutral: #ded9cc;
+
+  --plot-available: #d8e3d0;
+  --plot-reserved: #ebdbc0;
+  --plot-reserved-accent: #b98a4c;
+  --plot-occupied: #dcdcd6;
+  --plot-occupied-accent: #93958d;
 }
 
 @theme inline {
@@ -12,17 +29,35 @@
   --color-brand: var(--brand);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  --color-surface-raised: var(--surface-raised);
+  --color-border-neutral: var(--border-neutral);
+
+  --color-plot-available: var(--plot-available);
+  --color-plot-reserved: var(--plot-reserved);
+  --color-plot-reserved-accent: var(--plot-reserved-accent);
+  --color-plot-occupied: var(--plot-occupied);
+  --color-plot-occupied-accent: var(--plot-occupied-accent);
+  --color-plot-selected: var(--brand);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #14181a;
+    --foreground: #e8e6de;
+
+    --surface-raised: #1b211d;
+    --border-neutral: #2b322c;
+
+    --plot-available: #1e2a20;
+    --plot-reserved: #2c2417;
+    --plot-reserved-accent: #d2a467;
+    --plot-occupied: #2a2c29;
+    --plot-occupied-accent: #9a9c94;
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
 }
