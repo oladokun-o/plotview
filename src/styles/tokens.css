@@ -175,10 +175,11 @@
     --border-default: var(--stone-700);
     --border-strong: var(--stone-500);
 
-    --accent: color-mix(in oklab, var(--brand) 45%, var(--stone-100));
-    --accent-hover: color-mix(in oklab, var(--brand) 35%, var(--stone-50));
-    --accent-soft: color-mix(in oklab, var(--brand) 30%, var(--stone-900));
-    --accent-text: color-mix(in oklab, var(--brand) 40%, var(--stone-50));
+    /* A living green on dark surfaces: pale enough for dark text, saturated enough to read as active. */
+    --accent: color-mix(in oklab, var(--brand) 30%, var(--lichen-300));
+    --accent-hover: color-mix(in oklab, var(--brand) 18%, var(--lichen-300));
+    --accent-soft: color-mix(in oklab, var(--brand) 40%, var(--stone-900));
+    --accent-text: color-mix(in oklab, var(--brand) 20%, var(--lichen-300));
     --text-on-accent: var(--stone-950);
     --focus-ring: color-mix(in oklab, var(--brand) 40%, var(--stone-50));
 
