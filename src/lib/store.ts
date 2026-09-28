@@ -17,6 +17,8 @@ export interface AppState {
   view: MapView
   availableOnly: boolean
   selectedPlotId: string | null
+  /** The package chosen in the detail panel; carried into the reserve flow. */
+  selectedPackageId: string | null
 }
 
 type Preferences = Pick<AppState, "view" | "availableOnly">
@@ -27,6 +29,7 @@ const DEFAULT_STATE: AppState = {
   view: "grid",
   availableOnly: false,
   selectedPlotId: null,
+  selectedPackageId: null,
 }
 
 let state: AppState = DEFAULT_STATE
@@ -114,5 +117,8 @@ export const appActions = {
   },
   selectPlot(plotId: string | null) {
     setState({ selectedPlotId: plotId })
+  },
+  selectPackage(packageId: string) {
+    setState({ selectedPackageId: packageId })
   },
 }
