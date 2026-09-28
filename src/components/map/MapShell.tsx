@@ -1,12 +1,15 @@
 "use client"
 
+import dynamic from "next/dynamic"
 import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent, type MouseEvent } from "react"
+import type { PlotDetailsModel } from "@/components/panel/types"
 import { SampleDataBadge } from "@/components/SampleDataBadge"
 import { cn } from "@/lib/cn"
-import type { Insets } from "@/lib/geometry"
+import { rectCenter, type Insets } from "@/lib/geometry"
 import type { SearchResult } from "@/lib/search"
 import { appActions, getAppState, useAppState, type MapView } from "@/lib/store"
 import { useElementSize } from "@/lib/useElementSize"
+import { useMediaQuery } from "@/lib/useMediaQuery"
 import { useSelectedPlotUrl } from "@/lib/useSelectedPlotUrl"
 import type { Branding } from "@/types/branding"
 import type { Layout, PlotStatus } from "@/types/layout"
@@ -18,7 +21,7 @@ import type { MapGeometry } from "./mapGeometry"
 import { MapScene } from "./MapScene"
 import { MapViewport, type CameraApi } from "./MapViewport"
 import { toScreenPlots } from "./morph"
-import { MorphOverlay, type MorphPlan } from "./MorphOverlay"
+import type { MorphPlan } from "./MorphOverlay"
 import { PlotTooltip, type TooltipTarget } from "./PlotTooltip"
 import { SiteMapNote } from "./SiteMapNote"
 import { ARROW_DIRECTIONS, findNeighbour } from "./spatialNavigation"
@@ -26,6 +29,33 @@ import { computeSiteLayout } from "./sitemap/siteLayout"
 import { TopBar } from "./TopBar"
 import { ViewToggle } from "./ViewToggle"
 import { ZoomControls } from "./ZoomControls"
+
+// Needed only once a plot is selected or the view is switched, so they (and the
+// motion library they use) stay out of the first load and are fetched when idle.
+const loadDetailPanel = () => import("@/components/panel/DetailPanel")
+const loadBottomSheet = () => import("@/components/panel/BottomSheet")
+/** Set once the morph code has arrived; until then a view switch is instant rather than waiting on the network. */
+let morphOverlayLoaded = false
+const loadMorphOverlay = () =>
+  import("./MorphOverlay").then((module) => {
+    morphOverlayLoaded = true
+    return module
+  })
+const DetailPanel = dynamic(() => loadDetailPanel().then((module) => module.DetailPanel), { ssr: false })
+const BottomSheet = dynamic(() => loadBottomSheet().then((module) => module.BottomSheet), { ssr: false })
+const MorphOverlay = dynamic(() => loadMorphOverlay().then((module) => module.MorphOverlay), { ssr: false })
+
+function prefetchDeferredParts() {
+  void loadDetailPanel()
+  void loadBottomSheet()
+  void loadMorphOverlay()
+}
+
+/** A camera move queued by a selection: aim at a plot, or just keep it in view. */
+interface CameraRequest {
+  kind: "focus" | "reveal"
+  plotId: string
+}
 
 interface MapShellProps {
   layout: Layout
@@ -36,6 +66,8 @@ interface MapShellProps {
 const EDGE = 16
 /** The filter row under the top bar. */
 const FILTER_ROW = 44
+/** Width of the desktop detail panel, plus the gap on either side of it. */
+const PANEL_SPACE = 360 + EDGE * 2
 /** A focused plot's short side on screen, in pixels: big enough to see, small enough to keep its neighbours. */
 const PLOT_FOCUS_SIZE = 32
 /** On-screen plot size (px) below which plots are specks: glyphs are hidden. */
@@ -73,6 +105,9 @@ export function MapShell({ layout, branding }: MapShellProps) {
   const storedView = useAppState((state) => state.view)
   const availableOnly = useAppState((state) => state.availableOnly)
   const selectedPlotId = useAppState((state) => state.selectedPlotId)
+  const selectedPackageId = useAppState((state) => state.selectedPackageId)
+  const isDesktop = useMediaQuery("(min-width: 768px)")
+  const [sheetHeight, setSheetHeight] = useState(0)
 
   const hasSiteMap = layout.grounds.length + layout.paths.length + layout.landmarks.length > 0
   const view: MapView = hasSiteMap ? storedView : "grid"
@@ -80,9 +115,20 @@ export function MapShell({ layout, branding }: MapShellProps) {
   const [viewportRef, viewportSize] = useElementSize<HTMLDivElement>()
   const [topBarRef, topBarSize] = useElementSize<HTMLDivElement>()
 
-  const insets = useMemo<Insets>(
+  // The controls always float over these edges.
+  const baseInsets = useMemo<Insets>(
     () => ({ top: topBarSize.height + FILTER_ROW + EDGE * 1.5, right: EDGE, bottom: EDGE, left: EDGE }),
     [topBarSize.height],
+  )
+  // The detail panel or sheet covers more while a plot is selected; the camera keeps plots out from under it.
+  const panelOpen = selectedPlotId !== null
+  const insets = useMemo<Insets>(
+    () => ({
+      ...baseInsets,
+      left: panelOpen && isDesktop ? PANEL_SPACE : baseInsets.left,
+      bottom: panelOpen && !isDesktop && sheetHeight > 0 ? sheetHeight + EDGE : baseInsets.bottom,
+    }),
+    [baseInsets, panelOpen, isDesktop, sheetHeight],
   )
   const viewport = useMemo<Viewport>(
     () => ({ width: viewportSize.width, height: viewportSize.height, insets }),
@@ -90,8 +136,9 @@ export function MapShell({ layout, branding }: MapShellProps) {
   )
 
   // Grid blocks re-flow to the visible area's shape; rounded so tiny resizes do not re-flow.
-  const visibleWidth = viewport.width - insets.left - insets.right
-  const visibleHeight = viewport.height - insets.top - insets.bottom
+  // Measured without the panel, so opening it never reshuffles the sections.
+  const visibleWidth = viewport.width - baseInsets.left - baseInsets.right
+  const visibleHeight = viewport.height - baseInsets.top - baseInsets.bottom
   const gridAspect = visibleWidth > 0 && visibleHeight > 0 ? Math.round((visibleWidth / visibleHeight) * 10) / 10 : 1
 
   const geometryFor = useCallback(
@@ -254,7 +301,7 @@ export function MapShell({ layout, branding }: MapShellProps) {
         api.focus(focusBounds, { targetSize: PLOT_FOCUS_SIZE })
       } else if (geometryChanged && !firstFrame) {
         api.fit()
-      } else if (!geometryChanged && !api.hasUserMoved()) {
+      } else if (!geometryChanged && !api.hasUserMoved() && !getAppState().selectedPlotId) {
         api.fit({ animate: false })
       }
     }
@@ -272,6 +319,91 @@ export function MapShell({ layout, branding }: MapShellProps) {
     return () => cancelAnimationFrame(frame)
   }, [geometry, viewport])
 
+  const selectedPackage = layout.packages.find((pkg) => pkg.id === selectedPackageId) ?? layout.packages[0]
+
+  const detailsModel = useMemo<PlotDetailsModel | null>(() => {
+    const selected = selectedPlotId ? plotsById.get(selectedPlotId) : undefined
+    if (!selected) {
+      return null
+    }
+    // The closest reservable plot on the current map, offered when this one is taken.
+    let nearestAvailable: PlotDetailsModel["nearestAvailable"] = null
+    const origin = geometry.plotBounds.get(selected.plot.id)
+    if (selected.plot.status !== "available" && origin) {
+      const [originX, originY] = rectCenter(origin)
+      let bestDistance = Infinity
+      for (const [id, entry] of plotsById) {
+        const bounds = geometry.plotBounds.get(id)
+        if (entry.plot.status !== "available" || !bounds) {
+          continue
+        }
+        const [x, y] = rectCenter(bounds)
+        const distance = Math.hypot(x - originX, y - originY)
+        if (distance < bestDistance) {
+          bestDistance = distance
+          nearestAvailable = entry
+        }
+      }
+    }
+    return { ...selected, packages: layout.packages, currency: layout.site.currency, nearestAvailable }
+  }, [selectedPlotId, plotsById, geometry, layout])
+
+  // Camera moves that follow a selection wait for the render that opens the
+  // panel or sheet, so they aim at the space actually left free and nothing
+  // started a moment earlier cancels them.
+  const [cameraRequest, setCameraRequest] = useState<CameraRequest | null>(null)
+  const handledRequest = useRef<CameraRequest | null>(null)
+
+  // When the covered area changes on its own (the sheet settles, the window resizes),
+  // keep the selected plot out from under the panel or sheet.
+  useEffect(() => {
+    if (cameraRequest && handledRequest.current !== cameraRequest) {
+      return
+    }
+    const plotId = getAppState().selectedPlotId
+    const bounds = plotId ? geometry.plotBounds.get(plotId) : undefined
+    if (bounds && viewport.width > 0) {
+      camera.current?.reveal(bounds)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only when the covered area changes
+  }, [insets.left, insets.bottom])
+
+  useEffect(() => {
+    if (!cameraRequest || handledRequest.current === cameraRequest) {
+      return
+    }
+    handledRequest.current = cameraRequest
+    const bounds = geometry.plotBounds.get(cameraRequest.plotId)
+    if (!bounds) {
+      return
+    }
+    if (cameraRequest.kind === "focus") {
+      camera.current?.focus(bounds, { targetSize: PLOT_FOCUS_SIZE })
+    } else {
+      camera.current?.reveal(bounds)
+    }
+  }, [cameraRequest, geometry])
+
+  function handleViewPlot(plotId: string) {
+    appActions.selectPlot(plotId)
+    setTabStopPlotId(plotId)
+    setCameraRequest({ kind: "focus", plotId })
+  }
+
+  function handleReserve() {
+    // The reserve flow takes over the panel from here (phase 6).
+  }
+
+  // Warm the deferred chunks once the page is idle, so the first selection or view switch never waits.
+  useEffect(() => {
+    if ("requestIdleCallback" in window) {
+      const handle = window.requestIdleCallback(prefetchDeferredParts, { timeout: 3000 })
+      return () => window.cancelIdleCallback(handle)
+    }
+    const timer = setTimeout(prefetchDeferredParts, 1500)
+    return () => clearTimeout(timer)
+  }, [])
+
   // Escape clears the selection from anywhere except a text field (search handles its own Escape).
   useEffect(() => {
     function handleKeyDown(event: globalThis.KeyboardEvent) {
@@ -286,7 +418,7 @@ export function MapShell({ layout, branding }: MapShellProps) {
 
   function handleViewChange(next: MapView) {
     const api = camera.current
-    if (next === view || !api || viewport.width === 0 || prefersReducedMotion()) {
+    if (next === view || !api || viewport.width === 0 || prefersReducedMotion() || !morphOverlayLoaded) {
       appActions.setView(next)
       return
     }
@@ -315,9 +447,8 @@ export function MapShell({ layout, branding }: MapShellProps) {
     const deselect = getAppState().selectedPlotId === plotId
     appActions.selectPlot(deselect ? null : plotId)
     setTabStopPlotId(plotId)
-    const bounds = geometry.plotBounds.get(plotId)
-    if (!deselect && bounds) {
-      camera.current?.reveal(bounds)
+    if (!deselect) {
+      setCameraRequest({ kind: "reveal", plotId })
     }
   }
 
@@ -361,10 +492,8 @@ export function MapShell({ layout, branding }: MapShellProps) {
   function handlePick(result: SearchResult) {
     if (result.kind === "plot") {
       appActions.selectPlot(result.plot.id)
-      const bounds = geometry.plotBounds.get(result.plot.id)
-      if (bounds) {
-        camera.current?.focus(bounds, { targetSize: PLOT_FOCUS_SIZE })
-      }
+      setTabStopPlotId(result.plot.id)
+      setCameraRequest({ kind: "focus", plotId: result.plot.id })
     } else {
       const bounds = geometry.sectionBounds.get(result.section.id)
       if (bounds) {
@@ -442,9 +571,37 @@ export function MapShell({ layout, branding }: MapShellProps) {
         )}
       </div>
 
-      <div className="pointer-events-none absolute bottom-[max(0.75rem,env(safe-area-inset-bottom))] left-3 z-10 md:bottom-4 md:left-4">
+      <div
+        className={cn(
+          "pointer-events-none absolute bottom-[max(0.75rem,env(safe-area-inset-bottom))] left-3 z-10 transition-[left] duration-300 ease-standard md:bottom-4",
+          panelOpen ? "md:left-[392px]" : "md:left-4",
+        )}
+      >
         <SampleDataBadge />
       </div>
+
+      {isDesktop ? (
+        <DetailPanel
+          model={detailsModel}
+          selectedPackage={selectedPackage}
+          top={baseInsets.top - EDGE / 2}
+          onSelectPackage={appActions.selectPackage}
+          onViewPlot={handleViewPlot}
+          onReserve={handleReserve}
+          onClose={() => appActions.selectPlot(null)}
+        />
+      ) : (
+        <BottomSheet
+          model={detailsModel}
+          selectedPackage={selectedPackage}
+          viewportHeight={viewport.height}
+          onSelectPackage={appActions.selectPackage}
+          onViewPlot={handleViewPlot}
+          onReserve={handleReserve}
+          onClose={() => appActions.selectPlot(null)}
+          onHeightChange={setSheetHeight}
+        />
+      )}
 
       <div className="pointer-events-none absolute right-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-10 md:right-4 md:bottom-4">
         <ZoomControls

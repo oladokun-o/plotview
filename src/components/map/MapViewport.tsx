@@ -18,8 +18,8 @@ export interface CameraApi {
   focus(rect: Rect, options?: { fill?: number; targetSize?: number; maxScale?: number; animate?: boolean }): void
   /**
    * Bring an area into view with as little movement as possible: nothing if it
-   * is already comfortably visible, otherwise centre it and zoom in only as far
-   * as needed to make it easy to see.
+   * is already comfortably visible, a short pan if it is only off the edge or
+   * under a panel, and a centred zoom only when it is too small to see.
    */
   reveal(rect: Rect): void
   zoomIn(): void
@@ -49,6 +49,8 @@ const ZOOM_MS = 320
 const ZOOM_FACTOR = 1.6
 /** On screen, a revealed plot is at least this many pixels across its short side. */
 const REVEAL_MIN_SIZE = 14
+/** Space kept between a revealed plot and the edge of the visible area, in pixels. */
+const REVEAL_MARGIN = 48
 /** Pointer travel (px) after which a press counts as a drag, not a click. */
 const DRAG_THRESHOLD = 6
 
@@ -129,10 +131,28 @@ export function MapViewport({
         if (visible && comfortable === state.scale) {
           return
         }
+        userMoved.current = true
+        if (comfortable === state.scale) {
+          // Big enough already: pan only as far as needed to clear the covered edges.
+          const margin = REVEAL_MARGIN
+          const shiftX =
+            left < insets.left
+              ? insets.left + margin - left
+              : right > viewport.width - insets.right
+                ? viewport.width - insets.right - margin - right
+                : 0
+          const shiftY =
+            top < insets.top
+              ? insets.top + margin - top
+              : bottom > viewport.height - insets.bottom
+                ? viewport.height - insets.bottom - margin - bottom
+                : 0
+          apply({ scale: state.scale, x: state.positionX + shiftX, y: state.positionY + shiftY }, GLIDE_MS)
+          return
+        }
         const scale = Math.min(comfortable, CAMERA_MAX_SCALE)
         const centerX = insets.left + (viewport.width - insets.left - insets.right) / 2
         const centerY = insets.top + (viewport.height - insets.top - insets.bottom) / 2
-        userMoved.current = true
         apply(
           {
             scale,
