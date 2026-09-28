@@ -7,7 +7,7 @@ const SWATCH_SIZE = 14
 
 export function Legend() {
   return (
-    <ul className="flex flex-wrap gap-4 text-xs text-foreground/70">
+    <ul className="flex flex-wrap gap-4 text-xs text-secondary">
       {STATUSES.map((status) => (
         <li key={status} className="flex items-center gap-1.5">
           <svg width={SWATCH_SIZE} height={SWATCH_SIZE} aria-hidden="true">
@@ -15,7 +15,7 @@ export function Legend() {
               width={SWATCH_SIZE}
               height={SWATCH_SIZE}
               rx={3}
-              className={[STATUS_FILL_CLASS[status], "stroke-border-neutral stroke-1"].join(" ")}
+              className={[STATUS_FILL_CLASS[status], "stroke-line stroke-1"].join(" ")}
             />
             <PlotStatusGlyph status={status} size={SWATCH_SIZE} />
           </svg>

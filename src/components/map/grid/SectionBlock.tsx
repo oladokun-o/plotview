@@ -19,10 +19,10 @@ export function SectionBlock({ section, width, height, selectedPlotId, available
         width={width}
         height={height}
         rx={SECTION_RADIUS}
-        className="fill-surface-raised stroke-border-neutral"
+        className="fill-raised stroke-line-subtle"
         strokeWidth={1}
       />
-      <text x={GRID_SECTION_PADDING} y={GRID_SECTION_PADDING + 12} className="fill-foreground text-[11px] font-medium">
+      <text x={GRID_SECTION_PADDING} y={GRID_SECTION_PADDING + 12} className="fill-primary text-[11px] font-medium">
         {section.name}
       </text>
       {section.plots.map((plot) => {

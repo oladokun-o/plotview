@@ -41,8 +41,8 @@ export function PlotRect({ plot, x, y, size, isSelected, isDimmed, onSelect }: P
         rx={PLOT_RADIUS}
         className={[
           STATUS_FILL_CLASS[plot.status],
-          isSelected ? "stroke-plot-selected stroke-2" : "stroke-border-neutral stroke-1",
-          "group-focus-visible:stroke-plot-selected group-focus-visible:stroke-2",
+          isSelected ? "stroke-accent stroke-2" : "stroke-line stroke-1",
+          "group-focus-visible:stroke-accent group-focus-visible:stroke-2",
         ].join(" ")}
       />
       <PlotStatusGlyph status={plot.status} size={size} />
