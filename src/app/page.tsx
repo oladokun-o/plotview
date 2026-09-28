@@ -6,7 +6,7 @@ export default function Home() {
   const result = loadLayout();
 
   if (!result.success) {
-    return <LayoutErrorScreen message={result.error} />;
+    return <LayoutErrorScreen issue={result.issue} />;
   }
 
   return <MapContainer layout={result.layout} />;
