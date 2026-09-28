@@ -12,6 +12,7 @@ interface MapSceneProps extends PlotInteractions {
   view: MapView
   selectedPlotId: string | null
   tabStopPlotId: string | null
+  inkPlotId: string | null
   availableOnly: boolean
   onKeyDown: (event: KeyboardEvent<SVGSVGElement>) => void
   /** The first-visit arrival sequence is playing. */

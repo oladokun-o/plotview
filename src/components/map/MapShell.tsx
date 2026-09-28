@@ -79,6 +79,8 @@ const ZOOM_NEAR_FROM = 24
 /** The arrival sequence plays once per browser session. */
 const ARRIVAL_KEY = "plotview:arrived"
 const ARRIVAL_MS = 2200
+/** How long the reserved plot's ink fill plays, matching motion.css. */
+const INK_MS = 1600
 
 function prefersReducedMotion(): boolean {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches
@@ -412,12 +414,22 @@ export function MapShell({ layout: sourceLayout, branding }: MapShellProps) {
     setCameraRequest({ kind: "focus", plotId })
   }
 
-  // Back from the confirmation: the flow closes and the plot stays selected, now reserved.
+  // Back from the confirmation: the flow closes, the plot stays selected, and its
+  // new status spreads through it like ink.
+  const [inkPlotId, setInkPlotId] = useState<string | null>(null)
+  useEffect(() => {
+    if (!inkPlotId) {
+      return
+    }
+    const timer = window.setTimeout(() => setInkPlotId(null), INK_MS)
+    return () => window.clearTimeout(timer)
+  }, [inkPlotId])
 
   function handleBackToMap() {
     const plotId = getAppState().reservation?.plotId
     appActions.endReservation()
     if (plotId) {
+      setInkPlotId(plotId)
       setCameraRequest({ kind: "reveal", plotId })
     }
   }
@@ -562,6 +574,7 @@ export function MapShell({ layout: sourceLayout, branding }: MapShellProps) {
             view={view}
             selectedPlotId={selectedPlotId}
             tabStopPlotId={selectedPlotId ?? tabStopPlotId}
+            inkPlotId={inkPlotId}
             availableOnly={availableOnly}
             onSelect={handleSelectPlot}
             onHoverChange={setHoverPlotId}

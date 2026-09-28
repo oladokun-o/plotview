@@ -8,13 +8,14 @@ interface SiteSectionProps extends PlotInteractions {
   order: number
   selectedPlotId: string | null
   tabStopPlotId: string | null
+  inkPlotId: string | null
   availableOnly: boolean
 }
 
 const BED_MARGIN = 12
 
 /** A section at its surveyed position and angle: a mown bed edged by a low hedge, its plots and its name. */
-export function SiteSection({ placement, order, selectedPlotId, tabStopPlotId, availableOnly, ...interactions }: SiteSectionProps) {
+export function SiteSection({ placement, order, selectedPlotId, tabStopPlotId, inkPlotId, availableOnly, ...interactions }: SiteSectionProps) {
   const { section, width, height, plots } = placement
   const bed = { x: -BED_MARGIN, y: -BED_MARGIN, width: width + BED_MARGIN * 2, height: height + BED_MARGIN * 2 }
 
@@ -32,6 +33,7 @@ export function SiteSection({ placement, order, selectedPlotId, tabStopPlotId, a
             isSelected={plot.plot.id === selectedPlotId}
             isDimmed={availableOnly && plot.plot.status !== "available"}
             isTabStop={plot.plot.id === tabStopPlotId}
+            isInking={plot.plot.id === inkPlotId}
             {...interactions}
           />
         ))}

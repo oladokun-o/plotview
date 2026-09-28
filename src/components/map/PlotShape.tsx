@@ -21,6 +21,8 @@ interface PlotShapeProps extends PlotInteractions {
   isDimmed: boolean
   /** The one plot reachable with Tab; arrow keys move between the rest. */
   isTabStop: boolean
+  /** Just reserved: its new status spreads through it from the centre. */
+  isInking?: boolean
 }
 
 /** One plot, drawn the same way in both views. Status shows as colour and a glyph. */
@@ -31,6 +33,7 @@ export function PlotShape({
   isSelected,
   isDimmed,
   isTabStop,
+  isInking = false,
   onSelect,
   onHoverChange,
   onFocusChange,
@@ -41,6 +44,7 @@ export function PlotShape({
   const labelSize = Math.min(width * 0.44, height * 0.3)
   // When zoomed in, the glyph moves up to make room for the plot number below it.
   const glyphStyle = { "--glyph-shift": `${-height * 0.14}px` } as CSSProperties
+  const inkClipId = `ink-${plot.id.replace(/[^a-zA-Z0-9_-]/g, "")}`
 
   function handleKeyDown(event: KeyboardEvent<SVGGElement>) {
     if (event.key === "Enter" || event.key === " ") {
@@ -97,7 +101,25 @@ export function PlotShape({
           strokeWidth={isSelected ? 2 : 1}
           vectorEffect="non-scaling-stroke"
         />
+        {isInking && (
+          <g aria-hidden="true" className="pointer-events-none">
+            <clipPath id={inkClipId}>
+              <rect width={width} height={height} rx={radius} />
+            </clipPath>
+            <g clipPath={`url(#${inkClipId})`}>
+              <rect width={width} height={height} className="fill-available" />
+              <circle
+                data-ink="spread"
+                cx={width / 2}
+                cy={height / 2}
+                r={Math.hypot(width, height) / 2}
+                className="fill-reserved"
+              />
+            </g>
+          </g>
+        )}
         <g
+          data-ink={isInking ? "mark" : undefined}
           style={glyphStyle}
           className="transition-[translate] duration-200 ease-standard group-data-[zoom=far]/scene:hidden group-data-[zoom=near]/scene:translate-y-(--glyph-shift)"
         >
@@ -109,6 +131,7 @@ export function PlotShape({
           textAnchor="middle"
           dominantBaseline="central"
           aria-hidden="true"
+          data-ink={isInking ? "mark" : undefined}
           className={cn(
             "pointer-events-none hidden font-medium tabular-nums group-data-[zoom=near]/scene:inline",
             STATUS_MARK_FILL_CLASS[plot.status],
