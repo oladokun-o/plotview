@@ -69,6 +69,8 @@ const EDGE = 16
 const FILTER_ROW = 44
 /** Space between the top bar and the filter row. */
 const ROW_GAP = 8
+/** The site map note's row on a phone: two lines of small text plus the gap above it. */
+const SITE_NOTE_ROW = 54
 /** Desktop detail panel width. The reserve flow gets more room: 40% of the window, within these bounds. */
 const PANEL_WIDTH = 360
 const FLOW_PANEL_MAX = 480
@@ -133,11 +135,14 @@ export function MapShell({ layout: sourceLayout, branding }: MapShellProps) {
   // On wider screens the legend is inline and can wrap to a second line (a narrow
   // tablet, or the site map note beside it), so the row is measured, not assumed.
   const filterRow = isDesktop && filterRowSize.height > 0 ? filterRowSize.height + ROW_GAP : FILTER_ROW
+  // On a phone the site map note gets a row of its own under the filters; keep plots out from under it.
+  // A constant, not a measurement, so the camera frames the new view once instead of again a frame later.
+  const noteRow = !isDesktop && view === "sitemap" ? SITE_NOTE_ROW : 0
 
   // The controls always float over these edges.
   const baseInsets = useMemo<Insets>(
-    () => ({ top: topBarSize.height + filterRow + EDGE * 1.5, right: EDGE, bottom: EDGE, left: EDGE }),
-    [topBarSize.height, filterRow],
+    () => ({ top: topBarSize.height + filterRow + noteRow + EDGE * 1.5, right: EDGE, bottom: EDGE, left: EDGE }),
+    [topBarSize.height, filterRow, noteRow],
   )
   // The detail panel or sheet covers more while a plot is selected; the camera keeps plots out from under it.
   const panelOpen = selectedPlotId !== null
