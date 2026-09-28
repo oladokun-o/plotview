@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic"
 import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent, type MouseEvent } from "react"
 import type { PlotDetailsModel } from "@/components/panel/types"
+import { ResetDemoControl } from "@/components/ResetDemoControl"
 import { SampleDataBadge } from "@/components/SampleDataBadge"
 import { cn } from "@/lib/cn"
 import { rectCenter, type Insets } from "@/lib/geometry"
@@ -631,9 +632,11 @@ export function MapShell({ layout: sourceLayout, branding }: MapShellProps) {
 
       <div
         style={isDesktop ? { left: panelOpen ? panelSpace : EDGE } : undefined}
-        className="pointer-events-none absolute bottom-[max(0.75rem,env(safe-area-inset-bottom))] left-3 z-10 transition-[left] duration-300 ease-standard md:bottom-4"
+        className="pointer-events-none absolute bottom-[max(0.75rem,env(safe-area-inset-bottom))] left-3 z-10 flex items-center gap-2 transition-[left] duration-300 ease-standard md:bottom-4"
       >
         <SampleDataBadge />
+        {/* Hidden mid-reservation so a stray tap cannot throw away what was typed. */}
+        {!reservation && <ResetDemoControl />}
       </div>
 
       {isDesktop ? (
