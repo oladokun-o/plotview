@@ -74,7 +74,7 @@ export function ReserveFlow({
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <div className="border-b border-line-subtle p-5 pt-4">
+      <div className="border-b border-line-subtle p-5 pt-4 md:px-6 md:pt-5">
         <div className="flex items-center gap-2">
           <IconButton
             label={stepIndex === 0 ? "Back to plot details" : "Back to the previous step"}
@@ -85,7 +85,7 @@ export function ReserveFlow({
             className="-ml-2"
           />
           <div className="min-w-0 flex-1">
-            <h2 className="truncate font-display text-lg leading-tight text-primary">Reserve plot {plot.id}</h2>
+            <h2 className="truncate font-display text-lg leading-tight text-primary md:text-xl">Reserve plot {plot.id}</h2>
             <p className="truncate text-xs text-tertiary">
               {section.name} · Section {section.id}
             </p>
@@ -104,7 +104,7 @@ export function ReserveFlow({
         </div>
       </div>
 
-      <div className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain p-5">
+      <div className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain p-5 md:p-6">
         <AnimatePresence mode="wait" initial={false} custom={direction}>
           <m.div
             key={step}
@@ -142,7 +142,7 @@ export function ReserveFlow({
         </AnimatePresence>
       </div>
 
-      <div className="flex items-center gap-4 border-t border-line-subtle p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
+      <div className="flex items-center gap-4 border-t border-line-subtle p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] md:px-6">
         <div className="min-w-0 flex-1">
           <p className="truncate text-xs text-secondary">{selectedPackage.name}</p>
           <p className="text-lg font-semibold text-primary tabular-nums">{formatPrice(total, currency)}</p>

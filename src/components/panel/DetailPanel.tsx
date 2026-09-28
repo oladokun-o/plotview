@@ -17,7 +17,10 @@ interface DetailPanelProps {
   selectedPackage: Package
   reservation: Reservation | null
   buyer: BuyerDetails
+  width: number
   top: number
+  /** Run from top to bottom of the screen instead of fitting the content (the reserve flow). */
+  fullHeight: boolean
   onSelectPackage: (packageId: string) => void
   onViewPlot: (plotId: string) => void
   onReserve: () => void
@@ -31,7 +34,9 @@ export function DetailPanel({
   selectedPackage,
   reservation,
   buyer,
+  width,
   top,
+  fullHeight,
   onSelectPackage,
   onViewPlot,
   onReserve,
@@ -49,12 +54,12 @@ export function DetailPanel({
             <m.aside
               key="detail-panel"
               aria-labelledby={headingId}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, x: -20, width, top }}
+              animate={{ opacity: 1, x: 0, width, top }}
               exit={{ opacity: 0, x: -20, transition: { duration: 0.18, ease: [0.3, 0, 1, 1] } }}
               transition={{ type: "spring", bounce: 0, duration: 0.45 }}
-              style={{ top, maxHeight: `calc(100% - ${top}px - 1rem)` }}
-              className="pointer-events-auto absolute left-4 z-10 flex w-[360px] flex-col overflow-hidden rounded-xl bg-surface shadow-float ring-1 ring-inset ring-line-subtle"
+              style={{ maxHeight: `calc(100% - ${top}px - 1rem)`, height: fullHeight ? `calc(100% - ${top}px - 1rem)` : undefined }}
+              className="pointer-events-auto absolute left-4 z-10 flex flex-col overflow-hidden rounded-xl bg-surface shadow-float ring-1 ring-inset ring-line-subtle"
             >
               {reserving && reservation ? (
                 <m.div

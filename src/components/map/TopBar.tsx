@@ -16,6 +16,8 @@ interface TopBarProps {
   branding: Branding
   onPick: (result: SearchResult) => void
   ref?: Ref<HTMLDivElement>
+  /** Takes the whole bar out of the tab order and accessibility tree while it is hidden. */
+  inert?: boolean
   className?: string
 }
 
@@ -23,7 +25,7 @@ interface TopBarProps {
  * Brand and search. On wide screens both are always visible. On a phone the
  * brand row shows by default and search opens in its place, like a maps app.
  */
-export function TopBar({ layout, branding, onPick, ref, className }: TopBarProps) {
+export function TopBar({ layout, branding, onPick, ref, inert, className }: TopBarProps) {
   const [searchOpen, setSearchOpen] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -39,7 +41,7 @@ export function TopBar({ layout, branding, onPick, ref, className }: TopBarProps
   }
 
   return (
-    <Surface ref={ref} className={cn("pointer-events-auto p-2 md:p-3", className)}>
+    <Surface ref={ref} inert={inert} className={cn("pointer-events-auto p-2 md:p-3", className)}>
       <div className={cn("items-center gap-3 pl-1 md:flex md:pl-0", searchOpen ? "hidden" : "flex")}>
         <Image src={branding.logoPath} alt="" width={36} height={36} unoptimized className="size-9 shrink-0" />
         <div className="min-w-0 flex-1">

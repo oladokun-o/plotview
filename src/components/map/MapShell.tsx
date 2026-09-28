@@ -66,8 +66,10 @@ interface MapShellProps {
 const EDGE = 16
 /** The filter row under the top bar. */
 const FILTER_ROW = 44
-/** Width of the desktop detail panel, plus the gap on either side of it. */
-const PANEL_SPACE = 360 + EDGE * 2
+/** Desktop detail panel width. The reserve flow gets more room: 40% of the window, within these bounds. */
+const PANEL_WIDTH = 360
+const FLOW_PANEL_MAX = 480
+const FLOW_PANEL_SHARE = 0.4
 /** A focused plot's short side on screen, in pixels: big enough to see, small enough to keep its neighbours. */
 const PLOT_FOCUS_SIZE = 32
 /** On-screen plot size (px) below which plots are specks: glyphs are hidden. */
@@ -124,13 +126,20 @@ export function MapShell({ layout, branding }: MapShellProps) {
   )
   // The detail panel or sheet covers more while a plot is selected; the camera keeps plots out from under it.
   const panelOpen = selectedPlotId !== null
+  // While reserving on a wide screen the panel widens and runs full height, and
+  // the search card and filters step aside: nobody searches mid-checkout.
+  const reservingOnDesktop = isDesktop && reservation !== null && reservation.plotId === selectedPlotId
+  const panelWidth = reservingOnDesktop
+    ? Math.round(Math.min(Math.max(viewportSize.width * FLOW_PANEL_SHARE, PANEL_WIDTH), FLOW_PANEL_MAX))
+    : PANEL_WIDTH
+  const panelSpace = panelWidth + EDGE * 2
   const insets = useMemo<Insets>(
     () => ({
       ...baseInsets,
-      left: panelOpen && isDesktop ? PANEL_SPACE : baseInsets.left,
+      left: panelOpen && isDesktop ? panelSpace : baseInsets.left,
       bottom: panelOpen && !isDesktop && sheetHeight > 0 ? sheetHeight + EDGE : baseInsets.bottom,
     }),
-    [baseInsets, panelOpen, isDesktop, sheetHeight],
+    [baseInsets, panelOpen, isDesktop, panelSpace, sheetHeight],
   )
   const viewport = useMemo<Viewport>(
     () => ({ width: viewportSize.width, height: viewportSize.height, insets }),
@@ -562,9 +571,19 @@ export function MapShell({ layout, branding }: MapShellProps) {
           layout={layout}
           branding={branding}
           onPick={handlePick}
-          className="relative z-20 col-span-2 md:col-span-1"
+          inert={reservingOnDesktop || undefined}
+          className={cn(
+            "relative z-20 col-span-2 transition-opacity duration-300 ease-standard md:col-span-1",
+            reservingOnDesktop && "pointer-events-none opacity-0",
+          )}
         />
-        <div className="col-start-1 row-start-2 flex flex-wrap items-start gap-2 md:col-span-2">
+        <div
+          inert={reservingOnDesktop || undefined}
+          className={cn(
+            "col-start-1 row-start-2 flex flex-wrap items-start gap-2 transition-opacity duration-300 ease-standard md:col-span-2",
+            reservingOnDesktop && "pointer-events-none opacity-0",
+          )}
+        >
           <AvailableOnlyToggle checked={availableOnly} onChange={appActions.setAvailableOnly} />
           <Legend counts={counts} />
         </div>
@@ -581,10 +600,8 @@ export function MapShell({ layout, branding }: MapShellProps) {
       </div>
 
       <div
-        className={cn(
-          "pointer-events-none absolute bottom-[max(0.75rem,env(safe-area-inset-bottom))] left-3 z-10 transition-[left] duration-300 ease-standard md:bottom-4",
-          panelOpen ? "md:left-[392px]" : "md:left-4",
-        )}
+        style={isDesktop ? { left: panelOpen ? panelSpace : EDGE } : undefined}
+        className="pointer-events-none absolute bottom-[max(0.75rem,env(safe-area-inset-bottom))] left-3 z-10 transition-[left] duration-300 ease-standard md:bottom-4"
       >
         <SampleDataBadge />
       </div>
@@ -595,7 +612,9 @@ export function MapShell({ layout, branding }: MapShellProps) {
           selectedPackage={selectedPackage}
           reservation={reservation}
           buyer={buyer}
-          top={baseInsets.top - EDGE / 2}
+          width={panelWidth}
+          top={reservingOnDesktop ? EDGE : baseInsets.top - EDGE / 2}
+          fullHeight={reservingOnDesktop}
           onSelectPackage={appActions.selectPackage}
           onViewPlot={handleViewPlot}
           onReserve={handleReserve}
