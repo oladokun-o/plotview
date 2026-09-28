@@ -24,6 +24,15 @@ export const metadata: Metadata = {
   title: siteBranding.siteName,
   description: siteBranding.tagline,
   icons: { icon: siteBranding.logoPath },
+  // The share image itself comes from opengraph-image.tsx. On Vercel, Next.js
+  // resolves it to an absolute URL from the deployment's own address.
+  openGraph: {
+    title: siteBranding.siteName,
+    description: siteBranding.tagline,
+    siteName: siteBranding.siteName,
+    type: "website",
+  },
+  twitter: { card: "summary_large_image" },
 };
 
 export const viewport: Viewport = {
