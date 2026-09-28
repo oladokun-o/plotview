@@ -1,7 +1,15 @@
 import type { SectionPlacement } from "../mapGeometry"
 import { PlotShape, type PlotInteractions } from "../PlotShape"
 import { AvailabilityBar } from "./AvailabilityBar"
-import { GRID_GAP, GRID_ROW_GUTTER, GRID_SECTION_HEADER, GRID_SECTION_PADDING, cellLength } from "./gridLayout"
+import {
+  GRID_GAP,
+  GRID_ROW_GUTTER,
+  GRID_SECTION_HEADER,
+  GRID_SECTION_PADDING,
+  availabilityLabel,
+  cellLength,
+  gridContentInset,
+} from "./gridLayout"
 
 interface SectionBlockProps extends PlotInteractions {
   placement: SectionPlacement
@@ -28,6 +36,7 @@ export function SectionBlock({
   const reserved = section.plots.filter((plot) => plot.status === "reserved").length
   const rowHeight = cellLength(section)
   const plotsTop = GRID_SECTION_HEADER + GRID_SECTION_PADDING
+  const contentLeft = GRID_SECTION_PADDING + gridContentInset(section)
 
   return (
     <g transform={`translate(${placement.x}, ${placement.y})`}>
@@ -49,7 +58,7 @@ export function SectionBlock({
           textAnchor="end"
           className="fill-secondary text-[10.5px] tabular-nums"
         >
-          {`${available} of ${section.plots.length} available`}
+          {availabilityLabel(available, section.plots.length)}
         </text>
         <AvailabilityBar
           x={GRID_SECTION_PADDING}
@@ -63,7 +72,7 @@ export function SectionBlock({
           {Array.from({ length: section.rows }, (_, index) => (
             <text
               key={index}
-              x={GRID_SECTION_PADDING + GRID_ROW_GUTTER / 2 - 2}
+              x={contentLeft + GRID_ROW_GUTTER / 2 - 2}
               y={plotsTop + index * (rowHeight + GRID_GAP) + rowHeight / 2}
               textAnchor="middle"
               dominantBaseline="central"
