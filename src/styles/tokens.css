@@ -128,6 +128,7 @@
   --map-building-edge: var(--stone-400);
   --map-section: color-mix(in oklab, var(--stone-0) 55%, transparent);
   --map-label: var(--stone-700);
+  --map-shadow: rgb(28 26 24 / 0.14);
 
   --elevation-float: 0 1px 2px rgb(28 26 24 / 0.06), 0 6px 20px -6px rgb(28 26 24 / 0.18);
   --elevation-sheet: 0 -2px 6px rgb(28 26 24 / 0.05), 0 -12px 32px -12px rgb(28 26 24 / 0.22);
@@ -182,6 +183,7 @@
     --map-building-edge: var(--stone-600);
     --map-section: color-mix(in oklab, var(--stone-900) 55%, transparent);
     --map-label: var(--stone-300);
+    --map-shadow: rgb(0 0 0 / 0.35);
 
     --elevation-float: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px -6px rgb(0 0 0 / 0.5);
     --elevation-sheet: 0 -2px 6px rgb(0 0 0 / 0.25), 0 -12px 32px -12px rgb(0 0 0 / 0.55);
@@ -229,6 +231,21 @@
 
   --shadow-float: var(--elevation-float);
   --shadow-sheet: var(--elevation-sheet);
+
+  --color-map-ground: var(--map-ground);
+  --color-map-lawn: var(--map-lawn);
+  --color-map-planting: var(--map-planting);
+  --color-map-gravel: var(--map-gravel);
+  --color-map-road: var(--map-road);
+  --color-map-road-edge: var(--map-road-edge);
+  --color-map-water: var(--map-water);
+  --color-map-canopy: var(--map-canopy);
+  --color-map-canopy-edge: var(--map-canopy-edge);
+  --color-map-building: var(--map-building);
+  --color-map-building-edge: var(--map-building-edge);
+  --color-map-section: var(--map-section);
+  --color-map-label: var(--map-label);
+  --color-map-shadow: var(--map-shadow);
 
   --font-sans: var(--font-ui);
   --font-display: var(--font-serif);
