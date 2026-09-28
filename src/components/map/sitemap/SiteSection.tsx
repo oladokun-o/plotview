@@ -1,8 +1,11 @@
 import type { SectionPlacement } from "../mapGeometry"
 import { PlotShape, type PlotInteractions } from "../PlotShape"
+import { screenSizedLabel } from "./mapLabelStyle"
 
 interface SiteSectionProps extends PlotInteractions {
   placement: SectionPlacement
+  /** Position in file order (oldest first), used to stagger the arrival. */
+  order: number
   selectedPlotId: string | null
   tabStopPlotId: string | null
   availableOnly: boolean
@@ -10,34 +13,38 @@ interface SiteSectionProps extends PlotInteractions {
 
 const BED_MARGIN = 12
 
-/** A section at its surveyed position and angle: a mown bed with its plots and name. */
-export function SiteSection({ placement, selectedPlotId, tabStopPlotId, availableOnly, ...interactions }: SiteSectionProps) {
+/** A section at its surveyed position and angle: a mown bed edged by a low hedge, its plots and its name. */
+export function SiteSection({ placement, order, selectedPlotId, tabStopPlotId, availableOnly, ...interactions }: SiteSectionProps) {
   const { section, width, height, plots } = placement
+  const bed = { x: -BED_MARGIN, y: -BED_MARGIN, width: width + BED_MARGIN * 2, height: height + BED_MARGIN * 2 }
 
   return (
     <g transform={`translate(${placement.x}, ${placement.y}) rotate(${placement.rotation})`}>
-      <rect
-        x={-BED_MARGIN}
-        y={-BED_MARGIN}
-        width={width + BED_MARGIN * 2}
-        height={height + BED_MARGIN * 2}
-        rx={10}
-        className="fill-map-section"
-      />
-      <text x={-BED_MARGIN + 2} y={-BED_MARGIN - 10} className="pointer-events-none fill-map-label font-display text-[20px]">
-        {section.name}
-      </text>
-      {plots.map((plot) => (
-        <PlotShape
-          key={plot.plot.id}
-          placement={plot}
-          sectionName={section.name}
-          isSelected={plot.plot.id === selectedPlotId}
-          isDimmed={availableOnly && plot.plot.status !== "available"}
-          isTabStop={plot.plot.id === tabStopPlotId}
-          {...interactions}
-        />
-      ))}
+      <g data-arrival="rise" style={{ animationDelay: `${480 + order * 130}ms` }}>
+        <rect {...bed} x={bed.x + 3} y={bed.y + 5} rx={10} className="fill-map-shadow" opacity={0.6} />
+        <rect {...bed} rx={10} className="fill-map-section stroke-map-hedge" strokeWidth={3} />
+        {plots.map((plot) => (
+          <PlotShape
+            key={plot.plot.id}
+            placement={plot}
+            sectionName={section.name}
+            arrivalDelay={1050 + order * 90}
+            isSelected={plot.plot.id === selectedPlotId}
+            isDimmed={availableOnly && plot.plot.status !== "available"}
+            isTabStop={plot.plot.id === tabStopPlotId}
+            {...interactions}
+          />
+        ))}
+        <text
+          x={bed.x + 2}
+          y={bed.y}
+          dy="-0.55em"
+          className="pointer-events-none fill-map-label stroke-map-label-halo font-display"
+          style={screenSizedLabel(15, Math.max(bed.width / 9, 12))}
+        >
+          {section.name}
+        </text>
+      </g>
     </g>
   )
 }

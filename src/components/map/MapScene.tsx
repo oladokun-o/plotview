@@ -14,13 +14,17 @@ interface MapSceneProps extends PlotInteractions {
   tabStopPlotId: string | null
   availableOnly: boolean
   onKeyDown: (event: KeyboardEvent<SVGSVGElement>) => void
+  /** The first-visit arrival sequence is playing. */
+  arriving: boolean
+  /** A view morph is flying the plots; hide them here until it lands. */
+  morphing: boolean
   ref?: Ref<SVGSVGElement>
 }
 
 const INSTRUCTIONS_ID = "map-keyboard-instructions"
 
 /** The drawable map for the active view, in content coordinates. */
-export function MapScene({ layout, geometry, view, onKeyDown, ref, ...shared }: MapSceneProps) {
+export function MapScene({ layout, geometry, view, onKeyDown, arriving, morphing, ref, ...shared }: MapSceneProps) {
   return (
     <>
       <p id={INSTRUCTIONS_ID} className="sr-only">
@@ -31,7 +35,9 @@ export function MapScene({ layout, geometry, view, onKeyDown, ref, ...shared }: 
         width={geometry.width}
         height={geometry.height}
         viewBox={`0 0 ${geometry.width} ${geometry.height}`}
-        className="block overflow-visible"
+        className="group/scene block overflow-visible"
+        data-arriving={arriving || undefined}
+        data-morphing={morphing || undefined}
         role="group"
         aria-label={view === "grid" ? "Plots by section" : "Site map"}
         aria-describedby={INSTRUCTIONS_ID}

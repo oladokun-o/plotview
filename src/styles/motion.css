@@ -1,0 +1,80 @@
+/*
+ * Map motion choreography.
+ *
+ * Arrival: elements opt in with data-arrival="<role>" and an inline
+ * animation-delay. The sequence plays while the scene carries data-arriving;
+ * removing that attribute (on any interaction, or when it ends) stops it at
+ * once, because every element's resting style is its final state.
+ *
+ * Morph: while the scene carries data-morphing, its plots are hidden (a
+ * screen-space overlay flies them between views) and the rest fades in.
+ *
+ * prefers-reduced-motion collapses all of this through the global rule in
+ * globals.css, and the app skips both sequences entirely.
+ */
+
+@keyframes arrive-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes arrive-rise {
+  from {
+    opacity: 0;
+    translate: 0 14px;
+  }
+}
+
+@keyframes arrive-pop {
+  from {
+    opacity: 0;
+    scale: 0.4;
+  }
+}
+
+@keyframes arrive-trace {
+  from {
+    stroke-dashoffset: var(--path-length);
+  }
+}
+
+@keyframes arrive-brighten {
+  from {
+    opacity: 0.3;
+  }
+}
+
+[data-arriving] [data-arrival="ground"] {
+  animation: arrive-fade 700ms var(--ease-standard) both;
+}
+
+[data-arriving] [data-arrival="path"] {
+  animation: arrive-trace 1100ms cubic-bezier(0.45, 0, 0.2, 1) both;
+}
+
+[data-arriving] [data-arrival="rise"] {
+  animation: arrive-rise 650ms var(--ease-standard) both;
+}
+
+[data-arriving] [data-arrival="tree"] {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: arrive-pop 520ms var(--ease-standard) both;
+}
+
+[data-arriving] [data-arrival="fade"] {
+  animation: arrive-fade 500ms var(--ease-standard) both;
+}
+
+[data-arriving] [data-arrival="brighten"] {
+  animation: arrive-brighten 700ms var(--ease-standard) both;
+}
+
+[data-morphing] {
+  animation: arrive-fade 650ms 120ms var(--ease-standard) both;
+}
+
+[data-morphing] [data-plot-id] {
+  visibility: hidden;
+}

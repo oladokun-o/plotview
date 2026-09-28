@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, type PointerEvent, type ReactNode, type Re
 import { TransformComponent, TransformWrapper, type ReactZoomPanPinchRef } from "react-zoom-pan-pinch"
 import type { Rect } from "@/lib/geometry"
 import { cn } from "@/lib/cn"
-import { CAMERA_MAX_SCALE, CAMERA_MIN_SCALE, frameRect, type CameraTransform, type Viewport } from "./camera"
+import { CAMERA_MAX_SCALE, CAMERA_MIN_SCALE, focusRect, frameRect, type CameraTransform, type Viewport } from "./camera"
 
 /** Imperative camera controls, shared by both map views. */
 export interface CameraApi {
@@ -18,14 +18,18 @@ export interface CameraApi {
   focus(rect: Rect, options?: { fill?: number; targetSize?: number; maxScale?: number; animate?: boolean }): void
   /**
    * Bring an area into view with as little movement as possible: nothing if it
-   * is already comfortably visible, otherwise centre it and zoom in only as far
-   * as needed to make it easy to see.
+   * is already comfortably visible, a short pan if it is only off the edge or
+   * under a panel, and a centred zoom only when it is too small to see.
    */
   reveal(rect: Rect): void
   zoomIn(): void
   zoomOut(): void
   /** True once the person has panned or zoomed since the last fit. */
   hasUserMoved(): boolean
+  /** The current pan and zoom. */
+  getTransform(): CameraTransform
+  /** Jump (or glide) straight to a transform computed elsewhere. */
+  setTransform(transform: CameraTransform, options?: { animate?: boolean }): void
 }
 
 interface MapViewportProps {
@@ -35,7 +39,7 @@ interface MapViewportProps {
   cameraRef: RefObject<CameraApi | null>
   label: string
   /** Called on every pan/zoom frame, including camera animations. */
-  onTransform?: () => void
+  onTransform?: (scale: number) => void
   className?: string
   children: ReactNode
 }
@@ -45,6 +49,8 @@ const ZOOM_MS = 320
 const ZOOM_FACTOR = 1.6
 /** On screen, a revealed plot is at least this many pixels across its short side. */
 const REVEAL_MIN_SIZE = 14
+/** Space kept between a revealed plot and the edge of the visible area, in pixels. */
+const REVEAL_MARGIN = 48
 /** Pointer travel (px) after which a press counts as a drag, not a click. */
 const DRAG_THRESHOLD = 6
 
@@ -99,21 +105,11 @@ export function MapViewport({
       },
       focus(rect, { fill = 0.9, targetSize, maxScale = CAMERA_MAX_SCALE, animate = true } = {}) {
         userMoved.current = true
-        const framed = frameRect(rect, viewport, fill, maxScale)
-        if (targetSize !== undefined) {
-          const scale = Math.min(Math.max(targetSize / Math.min(rect.width, rect.height), CAMERA_MIN_SCALE), maxScale)
-          const ratio = scale / framed.scale
-          const [centerX, centerY] = [
-            framed.x + (rect.x + rect.width / 2) * framed.scale,
-            framed.y + (rect.y + rect.height / 2) * framed.scale,
-          ]
-          apply(
-            { scale, x: centerX - (centerX - framed.x) * ratio, y: centerY - (centerY - framed.y) * ratio },
-            animate ? GLIDE_MS : 0,
-          )
-        } else {
-          apply(framed, animate ? GLIDE_MS : 0)
-        }
+        const transform =
+          targetSize === undefined
+            ? frameRect(rect, viewport, fill, maxScale)
+            : focusRect(rect, viewport, targetSize, maxScale)
+        apply(transform, animate ? GLIDE_MS : 0)
         setReady(true)
       },
       reveal(rect) {
@@ -135,10 +131,28 @@ export function MapViewport({
         if (visible && comfortable === state.scale) {
           return
         }
+        userMoved.current = true
+        if (comfortable === state.scale) {
+          // Big enough already: pan only as far as needed to clear the covered edges.
+          const margin = REVEAL_MARGIN
+          const shiftX =
+            left < insets.left
+              ? insets.left + margin - left
+              : right > viewport.width - insets.right
+                ? viewport.width - insets.right - margin - right
+                : 0
+          const shiftY =
+            top < insets.top
+              ? insets.top + margin - top
+              : bottom > viewport.height - insets.bottom
+                ? viewport.height - insets.bottom - margin - bottom
+                : 0
+          apply({ scale: state.scale, x: state.positionX + shiftX, y: state.positionY + shiftY }, GLIDE_MS)
+          return
+        }
         const scale = Math.min(comfortable, CAMERA_MAX_SCALE)
         const centerX = insets.left + (viewport.width - insets.left - insets.right) / 2
         const centerY = insets.top + (viewport.height - insets.top - insets.bottom) / 2
-        userMoved.current = true
         apply(
           {
             scale,
@@ -151,6 +165,14 @@ export function MapViewport({
       zoomIn: () => zoomBy(ZOOM_FACTOR),
       zoomOut: () => zoomBy(1 / ZOOM_FACTOR),
       hasUserMoved: () => userMoved.current,
+      getTransform() {
+        const state = zoomRef.current?.instance.state
+        return state ? { x: state.positionX, y: state.positionY, scale: state.scale } : { x: 0, y: 0, scale: 1 }
+      },
+      setTransform(transform, { animate = false } = {}) {
+        apply(transform, animate ? GLIDE_MS : 0)
+        setReady(true)
+      },
     }
   })
 
@@ -198,7 +220,7 @@ export function MapViewport({
         onPanning={markMoved}
         onWheelStart={markMoved}
         onPinchStart={markMoved}
-        onTransform={onTransform}
+        onTransform={(_, state) => onTransform?.(state.scale)}
       >
         <TransformComponent
           wrapperStyle={{ width: "100%", height: "100%" }}

@@ -19,3 +19,14 @@ export const STATUS_STROKE_CLASS: Record<PlotStatus, string> = {
   reserved: "stroke-reserved-edge",
   occupied: "stroke-occupied-edge",
 }
+
+export const STATUS_MARK_FILL_CLASS: Record<PlotStatus, string> = {
+  available: "fill-available-mark",
+  reserved: "fill-reserved-mark",
+  occupied: "fill-occupied-mark",
+}
+
+/** The short label drawn inside a plot when zoomed in: "A-12" becomes "12". */
+export function plotNumber(plotId: string): string {
+  return plotId.replace(/^.*-/, "")
+}

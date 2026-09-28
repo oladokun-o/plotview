@@ -1,7 +1,7 @@
-import type { FocusEvent, KeyboardEvent, PointerEvent } from "react"
+import type { CSSProperties, FocusEvent, KeyboardEvent, PointerEvent } from "react"
 import { cn } from "@/lib/cn"
 import type { PlotPlacement } from "./mapGeometry"
-import { PLOT_STATUS_LABEL, STATUS_FILL_CLASS, STATUS_STROKE_CLASS } from "./plotVisuals"
+import { PLOT_STATUS_LABEL, STATUS_FILL_CLASS, STATUS_MARK_FILL_CLASS, STATUS_STROKE_CLASS, plotNumber } from "./plotVisuals"
 import { PlotStatusGlyph } from "./PlotStatusGlyph"
 
 export interface PlotInteractions {
@@ -15,6 +15,8 @@ export interface PlotInteractions {
 interface PlotShapeProps extends PlotInteractions {
   placement: PlotPlacement
   sectionName: string
+  /** When, in the arrival sequence, available plots brighten (ms). */
+  arrivalDelay: number
   isSelected: boolean
   isDimmed: boolean
   /** The one plot reachable with Tab; arrow keys move between the rest. */
@@ -25,6 +27,7 @@ interface PlotShapeProps extends PlotInteractions {
 export function PlotShape({
   placement,
   sectionName,
+  arrivalDelay,
   isSelected,
   isDimmed,
   isTabStop,
@@ -35,6 +38,9 @@ export function PlotShape({
   const { plot, x, y, width, height } = placement
   const radius = Math.min(width, height) * 0.18
   const status = PLOT_STATUS_LABEL[plot.status].toLowerCase()
+  const labelSize = Math.min(width * 0.44, height * 0.3)
+  // When zoomed in, the glyph moves up to make room for the plot number below it.
+  const glyphStyle = { "--glyph-shift": `${-height * 0.14}px` } as CSSProperties
 
   function handleKeyDown(event: KeyboardEvent<SVGGElement>) {
     if (event.key === "Enter" || event.key === " ") {
@@ -81,6 +87,8 @@ export function PlotShape({
           width={width}
           height={height}
           rx={radius}
+          data-arrival={plot.status === "available" ? "brighten" : undefined}
+          style={{ animationDelay: `${arrivalDelay}ms` }}
           className={cn(
             STATUS_FILL_CLASS[plot.status],
             isSelected ? "stroke-accent" : STATUS_STROKE_CLASS[plot.status],
@@ -89,7 +97,26 @@ export function PlotShape({
           strokeWidth={isSelected ? 2 : 1}
           vectorEffect="non-scaling-stroke"
         />
-        <PlotStatusGlyph status={plot.status} width={width} height={height} />
+        <g
+          style={glyphStyle}
+          className="transition-[translate] duration-200 ease-standard group-data-[zoom=far]/scene:hidden group-data-[zoom=near]/scene:translate-y-(--glyph-shift)"
+        >
+          <PlotStatusGlyph status={plot.status} width={width} height={height} />
+        </g>
+        <text
+          x={width / 2}
+          y={height * 0.74}
+          textAnchor="middle"
+          dominantBaseline="central"
+          aria-hidden="true"
+          className={cn(
+            "pointer-events-none hidden font-medium tabular-nums group-data-[zoom=near]/scene:inline",
+            STATUS_MARK_FILL_CLASS[plot.status],
+          )}
+          style={{ fontSize: labelSize }}
+        >
+          {plotNumber(plot.id)}
+        </text>
         {/* Focus ring: shown for keyboard focus only, outside the plot so it never hides the status. */}
         <rect
           x={-3}
