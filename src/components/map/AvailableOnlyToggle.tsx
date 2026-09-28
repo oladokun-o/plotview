@@ -5,12 +5,12 @@ interface AvailableOnlyToggleProps {
 
 export function AvailableOnlyToggle({ checked, onChange }: AvailableOnlyToggleProps) {
   return (
-    <label className="flex items-center gap-2 text-sm text-foreground/80">
+    <label className="flex items-center gap-2 text-sm text-primary">
       <input
         type="checkbox"
         checked={checked}
         onChange={(event) => onChange(event.target.checked)}
-        className="h-4 w-4 rounded border-border-neutral accent-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-plot-selected"
+        className="h-4 w-4 rounded border-line accent-accent"
       />
       Available only
     </label>

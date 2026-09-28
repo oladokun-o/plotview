@@ -1,0 +1,235 @@
+/*
+ * Design tokens.
+ *
+ * Three layers, each consuming only the one above it:
+ *   1. Primitives — raw values (palette, radii, shadows, motion). Never used by components.
+ *   2. Semantic   — what a value is for (surface, text, status, map ground). Themes swap these.
+ *   3. Tailwind   — semantic tokens exposed as utilities through @theme (bg-surface, text-secondary...).
+ *
+ * Branding only overrides --brand (set from src/data/branding.json in the root layout).
+ * Every derived accent colour is computed from it, so one value rebrands the whole UI.
+ */
+
+/* 1. Primitives */
+:root {
+  --brand: #2f5233;
+
+  --stone-0: #ffffff;
+  --stone-50: #f7f5f0;
+  --stone-100: #efece4;
+  --stone-200: #e2ddd1;
+  --stone-300: #cdc6b6;
+  --stone-400: #a8a192;
+  --stone-500: #837d70;
+  --stone-600: #645f55;
+  --stone-700: #4a4640;
+  --stone-800: #2e2b27;
+  --stone-850: #242220;
+  --stone-900: #1c1a18;
+  --stone-950: #131211;
+
+  --lichen-50: #eef3e8;
+  --lichen-100: #e0e9d5;
+  --lichen-300: #a9c092;
+  --lichen-500: #6f8f5a;
+  --lichen-700: #3f5a32;
+  --lichen-900: #1f2c19;
+
+  --clay-50: #f8efe0;
+  --clay-100: #f1e1c6;
+  --clay-300: #d9b37c;
+  --clay-500: #b3813f;
+  --clay-700: #7a5426;
+  --clay-900: #3a2a16;
+
+  --slate-50: #eeefec;
+  --slate-100: #dfe1dc;
+  --slate-300: #b4b8b1;
+  --slate-500: #7f847d;
+  --slate-700: #4f544e;
+  --slate-900: #262925;
+
+  --grass-light: #cfdcbc;
+  --grass-mid: #b9cda3;
+  --grass-deep: #9cb784;
+  --grass-night: #1f2a1d;
+  --grass-night-deep: #19221a;
+  --gravel-light: #e7dfcf;
+  --gravel-night: #3a3630;
+  --water-light: #bfd3d6;
+  --water-night: #1d2c30;
+  --canopy-light: #7f9d68;
+  --canopy-light-edge: #5f7c4b;
+  --canopy-night: #2b3a28;
+  --canopy-night-edge: #3c5037;
+
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --duration-slow: 320ms;
+}
+
+/* Theme-independent primitives Tailwind turns into utilities directly */
+@theme {
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-exit: cubic-bezier(0.3, 0, 1, 1);
+}
+
+/* 2. Semantic — light */
+:root {
+  --surface-canvas: var(--stone-50);
+  --surface-base: var(--stone-0);
+  --surface-raised: var(--stone-0);
+  --surface-sunken: var(--stone-100);
+  --surface-overlay: color-mix(in oklab, var(--stone-0) 88%, transparent);
+  --surface-scrim: color-mix(in oklab, var(--stone-950) 32%, transparent);
+
+  --text-primary: var(--stone-900);
+  --text-secondary: var(--stone-600);
+  --text-tertiary: var(--stone-500);
+  --text-inverse: var(--stone-50);
+
+  --border-subtle: var(--stone-200);
+  --border-default: var(--stone-300);
+  --border-strong: var(--stone-500);
+
+  --accent: var(--brand);
+  --accent-hover: color-mix(in oklab, var(--brand) 86%, black);
+  --accent-soft: color-mix(in oklab, var(--brand) 10%, var(--stone-0));
+  --accent-text: var(--brand);
+  --text-on-accent: var(--stone-0);
+  --focus-ring: color-mix(in oklab, var(--brand) 70%, var(--stone-0));
+
+  --status-available-fill: var(--lichen-100);
+  --status-available-edge: var(--lichen-500);
+  --status-available-mark: var(--lichen-700);
+  --status-reserved-fill: var(--clay-100);
+  --status-reserved-edge: var(--clay-500);
+  --status-reserved-mark: var(--clay-700);
+  --status-occupied-fill: var(--slate-100);
+  --status-occupied-edge: var(--slate-500);
+  --status-occupied-mark: var(--slate-700);
+
+  --map-ground: var(--grass-mid);
+  --map-lawn: var(--grass-light);
+  --map-planting: var(--grass-deep);
+  --map-gravel: var(--gravel-light);
+  --map-road: var(--stone-200);
+  --map-road-edge: var(--stone-300);
+  --map-water: var(--water-light);
+  --map-canopy: var(--canopy-light);
+  --map-canopy-edge: var(--canopy-light-edge);
+  --map-building: var(--stone-100);
+  --map-building-edge: var(--stone-400);
+  --map-section: color-mix(in oklab, var(--stone-0) 55%, transparent);
+  --map-label: var(--stone-700);
+
+  --elevation-float: 0 1px 2px rgb(28 26 24 / 0.06), 0 6px 20px -6px rgb(28 26 24 / 0.18);
+  --elevation-sheet: 0 -2px 6px rgb(28 26 24 / 0.05), 0 -12px 32px -12px rgb(28 26 24 / 0.22);
+}
+
+/* 2. Semantic — dark (system preference unless the page forces light) */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --surface-canvas: var(--stone-950);
+    --surface-base: var(--stone-900);
+    --surface-raised: var(--stone-850);
+    --surface-sunken: var(--stone-950);
+    --surface-overlay: color-mix(in oklab, var(--stone-900) 86%, transparent);
+    --surface-scrim: color-mix(in oklab, black 55%, transparent);
+
+    --text-primary: var(--stone-50);
+    --text-secondary: var(--stone-300);
+    --text-tertiary: var(--stone-400);
+    --text-inverse: var(--stone-900);
+
+    --border-subtle: var(--stone-800);
+    --border-default: var(--stone-700);
+    --border-strong: var(--stone-500);
+
+    --accent: color-mix(in oklab, var(--brand) 45%, var(--stone-100));
+    --accent-hover: color-mix(in oklab, var(--brand) 35%, var(--stone-50));
+    --accent-soft: color-mix(in oklab, var(--brand) 30%, var(--stone-900));
+    --accent-text: color-mix(in oklab, var(--brand) 40%, var(--stone-50));
+    --text-on-accent: var(--stone-950);
+    --focus-ring: color-mix(in oklab, var(--brand) 40%, var(--stone-50));
+
+    --status-available-fill: var(--lichen-900);
+    --status-available-edge: var(--lichen-500);
+    --status-available-mark: var(--lichen-300);
+    --status-reserved-fill: var(--clay-900);
+    --status-reserved-edge: var(--clay-500);
+    --status-reserved-mark: var(--clay-300);
+    --status-occupied-fill: var(--slate-900);
+    --status-occupied-edge: var(--slate-500);
+    --status-occupied-mark: var(--slate-300);
+
+    --map-ground: var(--grass-night-deep);
+    --map-lawn: var(--grass-night);
+    --map-planting: var(--canopy-night);
+    --map-gravel: var(--gravel-night);
+    --map-road: var(--stone-800);
+    --map-road-edge: var(--stone-700);
+    --map-water: var(--water-night);
+    --map-canopy: var(--canopy-night);
+    --map-canopy-edge: var(--canopy-night-edge);
+    --map-building: var(--stone-800);
+    --map-building-edge: var(--stone-600);
+    --map-section: color-mix(in oklab, var(--stone-900) 55%, transparent);
+    --map-label: var(--stone-300);
+
+    --elevation-float: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px -6px rgb(0 0 0 / 0.5);
+    --elevation-sheet: 0 -2px 6px rgb(0 0 0 / 0.25), 0 -12px 32px -12px rgb(0 0 0 / 0.55);
+  }
+}
+
+/* 3. Tailwind mapping */
+@theme inline {
+  --color-*: initial;
+  --color-transparent: transparent;
+  --color-current: currentColor;
+
+  --color-canvas: var(--surface-canvas);
+  --color-surface: var(--surface-base);
+  --color-raised: var(--surface-raised);
+  --color-sunken: var(--surface-sunken);
+  --color-overlay: var(--surface-overlay);
+  --color-scrim: var(--surface-scrim);
+
+  --color-primary: var(--text-primary);
+  --color-secondary: var(--text-secondary);
+  --color-tertiary: var(--text-tertiary);
+  --color-inverse: var(--text-inverse);
+
+  --color-line-subtle: var(--border-subtle);
+  --color-line: var(--border-default);
+  --color-line-strong: var(--border-strong);
+
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-text: var(--accent-text);
+  --color-on-accent: var(--text-on-accent);
+  --color-focus: var(--focus-ring);
+
+  --color-available: var(--status-available-fill);
+  --color-available-edge: var(--status-available-edge);
+  --color-available-mark: var(--status-available-mark);
+  --color-reserved: var(--status-reserved-fill);
+  --color-reserved-edge: var(--status-reserved-edge);
+  --color-reserved-mark: var(--status-reserved-mark);
+  --color-occupied: var(--status-occupied-fill);
+  --color-occupied-edge: var(--status-occupied-edge);
+  --color-occupied-mark: var(--status-occupied-mark);
+
+  --shadow-float: var(--elevation-float);
+  --shadow-sheet: var(--elevation-sheet);
+
+  --font-sans: var(--font-ui);
+  --font-display: var(--font-serif);
+}

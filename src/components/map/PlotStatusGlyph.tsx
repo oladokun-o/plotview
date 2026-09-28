@@ -17,13 +17,13 @@ export function PlotStatusGlyph({ status, size }: PlotStatusGlyphProps) {
         width={half * 2}
         height={half * 2}
         transform={`rotate(45 ${center} ${center})`}
-        className="fill-plot-reserved-accent"
+        className="fill-reserved-mark"
       />
     )
   }
 
   if (status === "occupied") {
-    return <circle cx={center} cy={center} r={size * 0.14} className="fill-plot-occupied-accent" />
+    return <circle cx={center} cy={center} r={size * 0.14} className="fill-occupied-mark" />
   }
 
   return null

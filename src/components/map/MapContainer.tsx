@@ -21,16 +21,16 @@ export function MapContainer({ layout }: MapContainerProps) {
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <div className="border-b border-border-neutral">
+      <div className="border-b border-line-subtle">
         <header className="mx-auto flex w-full max-w-5xl items-start justify-between gap-3 px-4 py-4 sm:px-6">
           <div>
-            <h1 className="text-lg font-semibold text-foreground">{layout.site.name}</h1>
-            <p className="mt-0.5 text-sm text-foreground/60">A place of rest, chosen with care.</p>
+            <h1 className="text-lg font-semibold text-primary">{layout.site.name}</h1>
+            <p className="mt-0.5 text-sm text-secondary">A place of rest, chosen with care.</p>
           </div>
           <SampleDataBadge />
         </header>
       </div>
-      <div className="border-b border-border-neutral">
+      <div className="border-b border-line-subtle">
         <div className="mx-auto flex w-full max-w-5xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6">
           <Legend />
           <AvailableOnlyToggle checked={availableOnly} onChange={setAvailableOnly} />

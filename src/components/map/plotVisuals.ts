@@ -7,9 +7,9 @@ export const PLOT_STATUS_LABEL: Record<PlotStatus, string> = {
 }
 
 export const STATUS_FILL_CLASS: Record<PlotStatus, string> = {
-  available: "fill-plot-available",
-  reserved: "fill-plot-reserved",
-  occupied: "fill-plot-occupied",
+  available: "fill-available",
+  reserved: "fill-reserved",
+  occupied: "fill-occupied",
 }
 
 export const PLOT_RADIUS = 6
