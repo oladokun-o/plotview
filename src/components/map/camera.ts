@@ -43,3 +43,18 @@ export function frameRect(target: Rect, viewport: Viewport, fill = 0.92, maxScal
     y: area.y + area.height / 2 - (target.y + target.height / 2) * scale,
   }
 }
+
+/**
+ * The transform that centres `target` in the visible area at a fixed on-screen
+ * size: its short side becomes `targetSize` pixels. Used for single plots, where
+ * filling the screen would zoom in far too much.
+ */
+export function focusRect(target: Rect, viewport: Viewport, targetSize: number, maxScale = CAMERA_MAX_SCALE): CameraTransform {
+  const area = visibleArea(viewport)
+  const scale = Math.min(Math.max(targetSize / Math.max(Math.min(target.width, target.height), 1), CAMERA_MIN_SCALE), maxScale)
+  return {
+    scale,
+    x: area.x + area.width / 2 - (target.x + target.width / 2) * scale,
+    y: area.y + area.height / 2 - (target.y + target.height / 2) * scale,
+  }
+}

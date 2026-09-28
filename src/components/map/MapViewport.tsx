@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, type PointerEvent, type ReactNode, type Re
 import { TransformComponent, TransformWrapper, type ReactZoomPanPinchRef } from "react-zoom-pan-pinch"
 import type { Rect } from "@/lib/geometry"
 import { cn } from "@/lib/cn"
-import { CAMERA_MAX_SCALE, CAMERA_MIN_SCALE, frameRect, type CameraTransform, type Viewport } from "./camera"
+import { CAMERA_MAX_SCALE, CAMERA_MIN_SCALE, focusRect, frameRect, type CameraTransform, type Viewport } from "./camera"
 
 /** Imperative camera controls, shared by both map views. */
 export interface CameraApi {
@@ -26,6 +26,10 @@ export interface CameraApi {
   zoomOut(): void
   /** True once the person has panned or zoomed since the last fit. */
   hasUserMoved(): boolean
+  /** The current pan and zoom. */
+  getTransform(): CameraTransform
+  /** Jump (or glide) straight to a transform computed elsewhere. */
+  setTransform(transform: CameraTransform, options?: { animate?: boolean }): void
 }
 
 interface MapViewportProps {
@@ -35,7 +39,7 @@ interface MapViewportProps {
   cameraRef: RefObject<CameraApi | null>
   label: string
   /** Called on every pan/zoom frame, including camera animations. */
-  onTransform?: () => void
+  onTransform?: (scale: number) => void
   className?: string
   children: ReactNode
 }
@@ -99,21 +103,11 @@ export function MapViewport({
       },
       focus(rect, { fill = 0.9, targetSize, maxScale = CAMERA_MAX_SCALE, animate = true } = {}) {
         userMoved.current = true
-        const framed = frameRect(rect, viewport, fill, maxScale)
-        if (targetSize !== undefined) {
-          const scale = Math.min(Math.max(targetSize / Math.min(rect.width, rect.height), CAMERA_MIN_SCALE), maxScale)
-          const ratio = scale / framed.scale
-          const [centerX, centerY] = [
-            framed.x + (rect.x + rect.width / 2) * framed.scale,
-            framed.y + (rect.y + rect.height / 2) * framed.scale,
-          ]
-          apply(
-            { scale, x: centerX - (centerX - framed.x) * ratio, y: centerY - (centerY - framed.y) * ratio },
-            animate ? GLIDE_MS : 0,
-          )
-        } else {
-          apply(framed, animate ? GLIDE_MS : 0)
-        }
+        const transform =
+          targetSize === undefined
+            ? frameRect(rect, viewport, fill, maxScale)
+            : focusRect(rect, viewport, targetSize, maxScale)
+        apply(transform, animate ? GLIDE_MS : 0)
         setReady(true)
       },
       reveal(rect) {
@@ -151,6 +145,14 @@ export function MapViewport({
       zoomIn: () => zoomBy(ZOOM_FACTOR),
       zoomOut: () => zoomBy(1 / ZOOM_FACTOR),
       hasUserMoved: () => userMoved.current,
+      getTransform() {
+        const state = zoomRef.current?.instance.state
+        return state ? { x: state.positionX, y: state.positionY, scale: state.scale } : { x: 0, y: 0, scale: 1 }
+      },
+      setTransform(transform, { animate = false } = {}) {
+        apply(transform, animate ? GLIDE_MS : 0)
+        setReady(true)
+      },
     }
   })
 
@@ -198,7 +200,7 @@ export function MapViewport({
         onPanning={markMoved}
         onWheelStart={markMoved}
         onPinchStart={markMoved}
-        onTransform={onTransform}
+        onTransform={(_, state) => onTransform?.(state.scale)}
       >
         <TransformComponent
           wrapperStyle={{ width: "100%", height: "100%" }}
