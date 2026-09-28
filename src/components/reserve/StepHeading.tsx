@@ -20,8 +20,8 @@ export function StepHeading({ children, description }: StepHeadingProps) {
   }, [])
 
   return (
-    <div className="mb-4">
-      <h3 ref={headingRef} tabIndex={-1} className="font-display text-xl text-primary outline-none">
+    <div className="mb-4 md:mb-5">
+      <h3 ref={headingRef} tabIndex={-1} className="font-display text-xl text-primary outline-none md:text-2xl">
         {children}
       </h3>
       {description && <p className="mt-1 text-sm leading-relaxed text-secondary">{description}</p>}
