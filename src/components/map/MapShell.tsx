@@ -65,8 +65,10 @@ interface MapShellProps {
 
 /** Space kept clear around the map for the floating controls, in pixels. */
 const EDGE = 16
-/** The filter row under the top bar. */
+/** The filter row under the top bar on a phone, where the legend folds into one button. */
 const FILTER_ROW = 44
+/** Space between the top bar and the filter row. */
+const ROW_GAP = 8
 /** Desktop detail panel width. The reserve flow gets more room: 40% of the window, within these bounds. */
 const PANEL_WIDTH = 360
 const FLOW_PANEL_MAX = 480
@@ -127,11 +129,15 @@ export function MapShell({ layout: sourceLayout, branding }: MapShellProps) {
 
   const [viewportRef, viewportSize] = useElementSize<HTMLDivElement>()
   const [topBarRef, topBarSize] = useElementSize<HTMLDivElement>()
+  const [filterRowRef, filterRowSize] = useElementSize<HTMLDivElement>()
+  // On wider screens the legend is inline and can wrap to a second line (a narrow
+  // tablet, or the site map note beside it), so the row is measured, not assumed.
+  const filterRow = isDesktop && filterRowSize.height > 0 ? filterRowSize.height + ROW_GAP : FILTER_ROW
 
   // The controls always float over these edges.
   const baseInsets = useMemo<Insets>(
-    () => ({ top: topBarSize.height + FILTER_ROW + EDGE * 1.5, right: EDGE, bottom: EDGE, left: EDGE }),
-    [topBarSize.height],
+    () => ({ top: topBarSize.height + filterRow + EDGE * 1.5, right: EDGE, bottom: EDGE, left: EDGE }),
+    [topBarSize.height, filterRow],
   )
   // The detail panel or sheet covers more while a plot is selected; the camera keeps plots out from under it.
   const panelOpen = selectedPlotId !== null
@@ -609,6 +615,7 @@ export function MapShell({ layout: sourceLayout, branding }: MapShellProps) {
           )}
         />
         <div
+          ref={filterRowRef}
           inert={reservingOnDesktop || undefined}
           className={cn(
             "col-start-1 row-start-2 flex flex-wrap items-start gap-2 transition-opacity duration-300 ease-standard md:col-span-2",
