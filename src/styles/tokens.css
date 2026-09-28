@@ -63,6 +63,23 @@
   --canopy-night: #2b3a28;
   --canopy-night-edge: #3c5037;
 
+  /* Night garden: the site map's ground in dark mode */
+  --night-ground: #1a2019;
+  --night-lawn: #222b20;
+  --night-planting: #2c3a28;
+  --night-gravel: #3b3832;
+  --night-gravel-edge: #47433b;
+  --night-road: #35322d;
+  --night-road-edge: #4a463f;
+  --night-water: #1f3337;
+  --night-water-edge: #2d474c;
+  --night-canopy: #30422c;
+  --night-canopy-edge: #43593d;
+  --night-canopy-highlight: #3d5337;
+  --night-building: #37332e;
+  --night-building-edge: #5a554c;
+  --night-hedge: #2f3f2b;
+
   --duration-fast: 120ms;
   --duration-base: 200ms;
   --duration-slow: 320ms;
@@ -128,7 +145,12 @@
   --map-building-edge: var(--stone-400);
   --map-section: color-mix(in oklab, var(--stone-0) 55%, transparent);
   --map-label: var(--stone-700);
+  --map-label-halo: color-mix(in oklab, var(--grass-light) 85%, white);
   --map-shadow: rgb(28 26 24 / 0.14);
+  --map-canopy-highlight: color-mix(in oklab, var(--canopy-light) 70%, white);
+  --map-water-edge: color-mix(in oklab, var(--water-light) 70%, white);
+  --map-gravel-edge: color-mix(in oklab, var(--gravel-light) 88%, var(--stone-500));
+  --map-hedge: var(--grass-deep);
 
   --elevation-float: 0 1px 2px rgb(28 26 24 / 0.06), 0 6px 20px -6px rgb(28 26 24 / 0.18);
   --elevation-sheet: 0 -2px 6px rgb(28 26 24 / 0.05), 0 -12px 32px -12px rgb(28 26 24 / 0.22);
@@ -171,20 +193,26 @@
     --status-occupied-edge: var(--slate-500);
     --status-occupied-mark: var(--slate-300);
 
-    --map-ground: var(--grass-night-deep);
-    --map-lawn: var(--grass-night);
-    --map-planting: var(--canopy-night);
-    --map-gravel: var(--gravel-night);
-    --map-road: var(--stone-800);
-    --map-road-edge: var(--stone-700);
-    --map-water: var(--water-night);
-    --map-canopy: var(--canopy-night);
-    --map-canopy-edge: var(--canopy-night-edge);
-    --map-building: var(--stone-800);
-    --map-building-edge: var(--stone-600);
-    --map-section: color-mix(in oklab, var(--stone-900) 55%, transparent);
-    --map-label: var(--stone-300);
-    --map-shadow: rgb(0 0 0 / 0.35);
+    /* A moonlit garden: distinct ground planes, readable paths, never pitch black. */
+    --map-ground: var(--night-ground);
+    --map-lawn: var(--night-lawn);
+    --map-planting: var(--night-planting);
+    --map-gravel: var(--night-gravel);
+    --map-gravel-edge: var(--night-gravel-edge);
+    --map-road: var(--night-road);
+    --map-road-edge: var(--night-road-edge);
+    --map-water: var(--night-water);
+    --map-water-edge: var(--night-water-edge);
+    --map-canopy: var(--night-canopy);
+    --map-canopy-edge: var(--night-canopy-edge);
+    --map-canopy-highlight: var(--night-canopy-highlight);
+    --map-building: var(--night-building);
+    --map-building-edge: var(--night-building-edge);
+    --map-section: color-mix(in oklab, var(--stone-900) 62%, transparent);
+    --map-hedge: var(--night-hedge);
+    --map-label: var(--stone-200);
+    --map-label-halo: var(--night-ground);
+    --map-shadow: rgb(0 0 0 / 0.4);
 
     --elevation-float: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px -6px rgb(0 0 0 / 0.5);
     --elevation-sheet: 0 -2px 6px rgb(0 0 0 / 0.25), 0 -12px 32px -12px rgb(0 0 0 / 0.55);
@@ -247,6 +275,11 @@
   --color-map-section: var(--map-section);
   --color-map-label: var(--map-label);
   --color-map-shadow: var(--map-shadow);
+  --color-map-label-halo: var(--map-label-halo);
+  --color-map-canopy-highlight: var(--map-canopy-highlight);
+  --color-map-water-edge: var(--map-water-edge);
+  --color-map-gravel-edge: var(--map-gravel-edge);
+  --color-map-hedge: var(--map-hedge);
 
   --font-sans: var(--font-ui);
   --font-display: var(--font-serif);
