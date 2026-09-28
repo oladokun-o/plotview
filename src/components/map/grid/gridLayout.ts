@@ -5,19 +5,22 @@ import { buildGeometry, placePlots, type MapGeometry, type SectionPlacement } fr
 export const GRID_CELL_WIDTH = 20
 export const GRID_GAP = 6
 export const GRID_SECTION_PADDING = 16
-export const GRID_SECTION_HEADER = 34
+/** Name, availability and the availability bar above the plots. */
+export const GRID_SECTION_HEADER = 44
+/** Row numbers down the left edge. */
+export const GRID_ROW_GUTTER = 16
 const MAX_LENGTH_RATIO = 2
 const SECTION_GAP = 40
 const CANVAS_MARGIN = 24
 
-function cellLength(section: Section): number {
+export function cellLength(section: Section): number {
   const ratio = (section.plotLength ?? section.plotSize) / section.plotSize
   return GRID_CELL_WIDTH * Math.min(Math.max(ratio, 1), MAX_LENGTH_RATIO)
 }
 
 function sectionSize(section: Section): { width: number; height: number } {
   return {
-    width: section.cols * GRID_CELL_WIDTH + (section.cols - 1) * GRID_GAP + GRID_SECTION_PADDING * 2,
+    width: GRID_ROW_GUTTER + section.cols * GRID_CELL_WIDTH + (section.cols - 1) * GRID_GAP + GRID_SECTION_PADDING * 2,
     height:
       GRID_SECTION_HEADER +
       section.rows * cellLength(section) +
@@ -76,7 +79,7 @@ export function computeGridLayout(sections: Section[], viewportAspect: number): 
           GRID_CELL_WIDTH,
           cellLength(section),
           GRID_GAP,
-          GRID_SECTION_PADDING,
+          GRID_SECTION_PADDING + GRID_ROW_GUTTER,
           GRID_SECTION_HEADER + GRID_SECTION_PADDING,
         ),
         bounds: { x, y, width, height },
