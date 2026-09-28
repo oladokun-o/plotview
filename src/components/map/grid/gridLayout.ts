@@ -12,15 +12,52 @@ export const GRID_ROW_GUTTER = 16
 const MAX_LENGTH_RATIO = 2
 const SECTION_GAP = 40
 const CANVAS_MARGIN = 24
+/**
+ * Generous per-character widths for the header's name (16px serif) and count
+ * (10.5px sans). SVG text cannot be measured before it renders, so a section is
+ * made wide enough for its header by estimate instead.
+ */
+const TITLE_CHAR_WIDTH = 8.5
+const COUNT_CHAR_WIDTH = 6.4
+const HEADER_TEXT_GAP = 16
 
 export function cellLength(section: Section): number {
   const ratio = (section.plotLength ?? section.plotSize) / section.plotSize
   return GRID_CELL_WIDTH * Math.min(Math.max(ratio, 1), MAX_LENGTH_RATIO)
 }
 
+/** "12 of 60 available", as shown in a section's header. */
+export function availabilityLabel(available: number, total: number): string {
+  return `${available} of ${total} available`
+}
+
+/** Row numbers plus the plots, side to side. */
+function plotsWidth(section: Section): number {
+  return GRID_ROW_GUTTER + section.cols * GRID_CELL_WIDTH + (section.cols - 1) * GRID_GAP
+}
+
+/** Room the header needs, sized for the longest count so it never changes as plots are reserved. */
+function headerWidth(section: Section): number {
+  const total = section.plots.length
+  return (
+    section.name.length * TITLE_CHAR_WIDTH +
+    HEADER_TEXT_GAP +
+    availabilityLabel(total, total).length * COUNT_CHAR_WIDTH
+  )
+}
+
+/**
+ * How far the row numbers and plots are pushed in from the left padding: a
+ * section with a long name or few columns is widened for its header, and its
+ * plots are centred in the extra width.
+ */
+export function gridContentInset(section: Section): number {
+  return Math.max(0, headerWidth(section) - plotsWidth(section)) / 2
+}
+
 function sectionSize(section: Section): { width: number; height: number } {
   return {
-    width: GRID_ROW_GUTTER + section.cols * GRID_CELL_WIDTH + (section.cols - 1) * GRID_GAP + GRID_SECTION_PADDING * 2,
+    width: Math.max(plotsWidth(section), headerWidth(section)) + GRID_SECTION_PADDING * 2,
     height:
       GRID_SECTION_HEADER +
       section.rows * cellLength(section) +
@@ -79,7 +116,7 @@ export function computeGridLayout(sections: Section[], viewportAspect: number): 
           GRID_CELL_WIDTH,
           cellLength(section),
           GRID_GAP,
-          GRID_SECTION_PADDING + GRID_ROW_GUTTER,
+          GRID_SECTION_PADDING + gridContentInset(section) + GRID_ROW_GUTTER,
           GRID_SECTION_HEADER + GRID_SECTION_PADDING,
         ),
         bounds: { x, y, width, height },
