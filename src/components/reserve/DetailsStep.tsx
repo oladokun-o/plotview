@@ -49,6 +49,7 @@ export function DetailsStep({ formId, buyer, onChange, onValid }: DetailsStepPro
           id={`${formId}-name`}
           name="fullName"
           label="Full name"
+          placeholder="First and last name"
           autoComplete="name"
           value={buyer.fullName}
           onValueChange={(fullName) => onChange({ fullName })}
@@ -59,6 +60,7 @@ export function DetailsStep({ formId, buyer, onChange, onValid }: DetailsStepPro
           id={`${formId}-phone`}
           name="phone"
           label="Phone number"
+          placeholder="+237 677 123 456"
           type="tel"
           inputMode="tel"
           autoComplete="tel"
@@ -71,6 +73,7 @@ export function DetailsStep({ formId, buyer, onChange, onValid }: DetailsStepPro
           id={`${formId}-email`}
           name="email"
           label="Email"
+          placeholder="name@example.com"
           type="email"
           inputMode="email"
           autoComplete="email"
