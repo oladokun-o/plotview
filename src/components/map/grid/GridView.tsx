@@ -13,8 +13,8 @@ interface GridViewProps extends PlotInteractions {
 export function GridView({ geometry, ...shared }: GridViewProps) {
   return (
     <g>
-      {geometry.sections.map((placement) => (
-        <SectionBlock key={placement.section.id} placement={placement} {...shared} />
+      {geometry.sections.map((placement, order) => (
+        <SectionBlock key={placement.section.id} placement={placement} order={order} {...shared} />
       ))}
     </g>
   )

@@ -2,6 +2,7 @@ import type { Layout } from "@/types/layout"
 import type { MapGeometry } from "../mapGeometry"
 import type { PlotInteractions } from "../PlotShape"
 import { GroundLayer } from "./GroundLayer"
+import { LandmarkLabels } from "./LandmarkLabels"
 import { LandmarkLayer } from "./LandmarkLayer"
 import { PathLayer } from "./PathLayer"
 import { SiteSection } from "./SiteSection"
@@ -20,7 +21,8 @@ export function SiteMapView({ layout, geometry, ...shared }: SiteMapViewProps) {
   const { underlay } = layout
 
   return (
-    <g>
+    // Receives --map-scale on every pan/zoom frame (see MapShell) for its screen-sized labels.
+    <g data-scale-root="">
       {underlay && (
         <image
           href={underlay.src}
@@ -36,10 +38,11 @@ export function SiteMapView({ layout, geometry, ...shared }: SiteMapViewProps) {
       <GroundLayer grounds={layout.grounds} />
       <PathLayer paths={layout.paths} />
       <LandmarkLayer landmarks={layout.landmarks} />
-      {geometry.sections.map((placement) => (
-        <SiteSection key={placement.section.id} placement={placement} {...shared} />
+      {geometry.sections.map((placement, order) => (
+        <SiteSection key={placement.section.id} placement={placement} order={order} {...shared} />
       ))}
       <TreeLayer trees={layout.trees} />
+      <LandmarkLabels landmarks={layout.landmarks} />
     </g>
   )
 }

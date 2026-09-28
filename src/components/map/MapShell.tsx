@@ -11,12 +11,14 @@ import { useSelectedPlotUrl } from "@/lib/useSelectedPlotUrl"
 import type { Branding } from "@/types/branding"
 import type { Layout, PlotStatus } from "@/types/layout"
 import { AvailableOnlyToggle } from "./AvailableOnlyToggle"
-import type { Viewport } from "./camera"
+import { focusRect, frameRect, type CameraTransform, type Viewport } from "./camera"
 import { computeGridLayout } from "./grid/gridLayout"
 import { Legend } from "./Legend"
 import type { MapGeometry } from "./mapGeometry"
 import { MapScene } from "./MapScene"
 import { MapViewport, type CameraApi } from "./MapViewport"
+import { toScreenPlots } from "./morph"
+import { MorphOverlay, type MorphPlan } from "./MorphOverlay"
 import { PlotTooltip, type TooltipTarget } from "./PlotTooltip"
 import { SiteMapNote } from "./SiteMapNote"
 import { ARROW_DIRECTIONS, findNeighbour } from "./spatialNavigation"
@@ -36,6 +38,32 @@ const EDGE = 16
 const FILTER_ROW = 44
 /** A focused plot's short side on screen, in pixels: big enough to see, small enough to keep its neighbours. */
 const PLOT_FOCUS_SIZE = 32
+/** On-screen plot size (px) below which plots are specks: glyphs are hidden. */
+const ZOOM_FAR_BELOW = 7
+/** On-screen plot size (px) from which plot numbers fit inside plots. */
+const ZOOM_NEAR_FROM = 24
+/** The arrival sequence plays once per browser session. */
+const ARRIVAL_KEY = "plotview:arrived"
+const ARRIVAL_MS = 2200
+
+function prefersReducedMotion(): boolean {
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches
+}
+
+function shouldPlayArrival(): boolean {
+  if (prefersReducedMotion()) {
+    return false
+  }
+  try {
+    if (window.sessionStorage.getItem(ARRIVAL_KEY)) {
+      return false
+    }
+    window.sessionStorage.setItem(ARRIVAL_KEY, "1")
+  } catch {
+    // Without storage the sequence may replay on reload; that is harmless.
+  }
+  return true
+}
 
 /**
  * The full-screen map and everything floating over it. Owns which view is shown,
@@ -66,10 +94,17 @@ export function MapShell({ layout, branding }: MapShellProps) {
   const visibleHeight = viewport.height - insets.top - insets.bottom
   const gridAspect = visibleWidth > 0 && visibleHeight > 0 ? Math.round((visibleWidth / visibleHeight) * 10) / 10 : 1
 
-  const geometry = useMemo(
-    () => (view === "grid" ? computeGridLayout(layout.sections, gridAspect) : computeSiteLayout(layout)),
-    [view, gridAspect, layout],
+  const geometryFor = useCallback(
+    (target: MapView) => (target === "grid" ? computeGridLayout(layout.sections, gridAspect) : computeSiteLayout(layout)),
+    [layout, gridAspect],
   )
+  const geometry = useMemo(() => geometryFor(view), [geometryFor, view])
+
+  // Smallest plot side in the current view: what decides how much detail fits at a zoom level.
+  const plotShortSide = useMemo(() => {
+    const sides = geometry.sections.flatMap((section) => section.plots.map((plot) => Math.min(plot.width, plot.height)))
+    return sides.length > 0 ? Math.min(...sides) : 1
+  }, [geometry])
 
   const counts = useMemo(() => {
     const totals: Record<PlotStatus, number> = { available: 0, reserved: 0, occupied: 0 }
@@ -116,9 +151,58 @@ export function MapShell({ layout, branding }: MapShellProps) {
       transformListeners.current.delete(listener)
     }
   }, [])
-  const handleTransform = useCallback(() => {
-    transformListeners.current.forEach((listener) => listener())
+
+  // Zoom-dependent detail is switched with a data attribute and a CSS variable
+  // written straight to the scene, so pan and zoom never re-render the map.
+  const zoomState = useRef({ scale: 1, plotShortSide })
+  const applyZoom = useCallback((scale: number) => {
+    zoomState.current.scale = scale
+    const scene = sceneRef.current
+    if (!scene) {
+      return
+    }
+    // Only the site map uses --map-scale, so only its subtree receives it. When it
+    // reached grid text (which never reads it), Chromium painted that text without
+    // the map's zoom at small scales.
+    scene.querySelector<SVGGElement>("[data-scale-root]")?.style.setProperty("--map-scale", String(scale))
+    const plotPixels = scale * zoomState.current.plotShortSide
+    const level = plotPixels < ZOOM_FAR_BELOW ? "far" : plotPixels >= ZOOM_NEAR_FROM ? "near" : "mid"
+    if (scene.dataset.zoom !== level) {
+      scene.dataset.zoom = level
+    }
   }, [])
+  useEffect(() => {
+    zoomState.current.plotShortSide = plotShortSide
+    applyZoom(zoomState.current.scale)
+  }, [plotShortSide, applyZoom])
+
+  const handleTransform = useCallback(
+    (scale: number) => {
+      applyZoom(scale)
+      transformListeners.current.forEach((listener) => listener())
+    },
+    [applyZoom],
+  )
+
+  // Arrival: the site draws itself once per visit. Any interaction ends it.
+  const [arriving, setArriving] = useState(false)
+  useEffect(() => {
+    if (!arriving) {
+      return
+    }
+    const stop = () => setArriving(false)
+    const timer = window.setTimeout(stop, ARRIVAL_MS)
+    const events = ["pointerdown", "wheel", "keydown"] as const
+    events.forEach((type) => window.addEventListener(type, stop, { once: true, passive: true }))
+    return () => {
+      window.clearTimeout(timer)
+      events.forEach((type) => window.removeEventListener(type, stop))
+    }
+  }, [arriving])
+
+  // Morph: switching views flies each plot to its place in the other view.
+  const [morph, setMorph] = useState<MorphPlan | null>(null)
+  const morphTarget = useRef<CameraTransform | null>(null)
 
   const camera = useRef<CameraApi | null>(null)
   const lastGeometry = useRef<MapGeometry | null>(null)
@@ -150,6 +234,19 @@ export function MapShell({ layout, branding }: MapShellProps) {
     if (firstFrame) {
       // Frame the whole map at once so nothing flashes at the wrong size.
       api.fit({ animate: false })
+      if (!focusBounds && shouldPlayArrival()) {
+        requestAnimationFrame(() => setArriving(true))
+      }
+    }
+
+    // A view morph already decided where the camera ends up.
+    const target = morphTarget.current
+    if (target && geometryChanged) {
+      morphTarget.current = null
+      let frame = requestAnimationFrame(() => {
+        frame = requestAnimationFrame(() => api.setTransform(target))
+      })
+      return () => cancelAnimationFrame(frame)
     }
 
     const move = () => {
@@ -186,6 +283,33 @@ export function MapShell({ layout, branding }: MapShellProps) {
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
   }, [])
+
+  function handleViewChange(next: MapView) {
+    const api = camera.current
+    if (next === view || !api || viewport.width === 0 || prefersReducedMotion()) {
+      appActions.setView(next)
+      return
+    }
+    const nextGeometry = geometryFor(next)
+    const selected = getAppState().selectedPlotId
+    const selectedBounds = selected ? nextGeometry.plotBounds.get(selected) : undefined
+    const target = selectedBounds
+      ? focusRect(selectedBounds, viewport, PLOT_FOCUS_SIZE)
+      : frameRect({ x: 0, y: 0, width: nextGeometry.width, height: nextGeometry.height }, viewport)
+
+    const dimmed = new Set<string>()
+    if (getAppState().availableOnly) {
+      for (const [id, entry] of plotsById) {
+        if (entry.plot.status !== "available") {
+          dimmed.add(id)
+        }
+      }
+    }
+    morphTarget.current = target
+    setArriving(false)
+    setMorph({ from: toScreenPlots(geometry, api.getTransform()), to: toScreenPlots(nextGeometry, target), dimmed })
+    appActions.setView(next)
+  }
 
   function handleSelectPlot(plotId: string) {
     const deselect = getAppState().selectedPlotId === plotId
@@ -279,8 +403,11 @@ export function MapShell({ layout, branding }: MapShellProps) {
             onHoverChange={setHoverPlotId}
             onFocusChange={handleFocusChange}
             onKeyDown={handleSceneKeyDown}
+            arriving={arriving}
+            morphing={morph !== null}
           />
         </MapViewport>
+        {morph && <MorphOverlay plan={morph} onDone={() => setMorph(null)} />}
         <PlotTooltip
           target={tooltipPlotId ? (plotsById.get(tooltipPlotId) ?? null) : null}
           fromMultiplier={fromMultiplier}
@@ -305,7 +432,7 @@ export function MapShell({ layout, branding }: MapShellProps) {
         </div>
         {hasSiteMap && (
           <div className="col-start-2 row-start-2 justify-self-end md:col-start-3 md:row-start-1">
-            <ViewToggle view={view} onChange={appActions.setView} />
+            <ViewToggle view={view} onChange={handleViewChange} />
           </div>
         )}
         {hasSiteMap && view === "sitemap" && (
