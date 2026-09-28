@@ -3,7 +3,9 @@
 import { X } from "lucide-react"
 import { animate, m, useMotionValue } from "motion/react"
 import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type PointerEvent } from "react"
+import { ReserveFlow } from "@/components/reserve/ReserveFlow"
 import { IconButton } from "@/components/ui/IconButton"
+import type { BuyerDetails, Reservation } from "@/lib/store"
 import type { Package } from "@/types/layout"
 import { PlotDetailsBody } from "./PlotDetailsBody"
 import { PlotSummary } from "./PlotSummary"
@@ -15,10 +17,13 @@ type Snap = "peek" | "half" | "full"
 export interface SheetSurfaceProps {
   model: PlotDetailsModel
   selectedPackage: Package
+  reservation: Reservation | null
+  buyer: BuyerDetails
   viewportHeight: number
   onSelectPackage: (packageId: string) => void
   onViewPlot: (plotId: string) => void
   onReserve: () => void
+  onProceedToPayment: () => void
   onClose: () => void
   /** The sheet's resting height, so the map can keep the plot visible above it. */
   onHeightChange: (height: number) => void
@@ -48,14 +53,19 @@ interface DragState {
 export function SheetSurface({
   model,
   selectedPackage,
+  reservation,
+  buyer,
   viewportHeight,
   onSelectPackage,
   onViewPlot,
   onReserve,
+  onProceedToPayment,
   onClose,
   onHeightChange,
 }: SheetSurfaceProps) {
   const headingId = useId()
+  // Forms need the room: while reserving, the sheet stays at full height.
+  const reserving = reservation?.plotId === model.plot.id
   const headerRef = useRef<HTMLDivElement>(null)
   const bodyRef = useRef<HTMLDivElement>(null)
   const footerRef = useRef<HTMLDivElement>(null)
@@ -113,6 +123,16 @@ export function SheetSurface({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- only when the snap heights move
   }, [heights.peek, heights.half, heights.full, springTo])
 
+  // Entering the reserve flow opens the sheet fully; leaving it returns to half.
+  const [wasReserving, setWasReserving] = useState(reserving)
+  if (reserving !== wasReserving) {
+    setWasReserving(reserving)
+    setSnap(reserving ? "full" : "half")
+  }
+  useEffect(() => {
+    springTo(reserving ? "full" : "half")
+  }, [reserving, springTo])
+
   function handlePointerDown(event: PointerEvent<HTMLDivElement>) {
     if (event.button !== 0 || (event.target instanceof Element && event.target.closest("button"))) {
       return
@@ -156,6 +176,15 @@ export function SheetSurface({
     const velocity = (first.y - last.y) / elapsed
     const projected = height.get() + velocity * PROJECTION_MS
 
+    if (reserving) {
+      // Only a deliberate pull closes the flow; anything less springs back to full.
+      if (projected < heights.full * 0.5) {
+        onClose()
+      } else {
+        settle("full", velocity * 1000)
+      }
+      return
+    }
     if (projected < heights.peek * 0.55) {
       onClose()
       return
@@ -178,64 +207,91 @@ export function SheetSurface({
       style={{ height }}
       className="pointer-events-auto fixed inset-x-0 bottom-0 z-20 flex flex-col overflow-hidden rounded-t-2xl bg-surface shadow-sheet ring-1 ring-inset ring-line-subtle"
     >
-      <div
-        ref={headerRef}
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
-        onPointerCancel={handlePointerUp}
-        className="shrink-0 cursor-grab touch-none px-5 pb-4 select-none active:cursor-grabbing"
-      >
-        <button
-          type="button"
-          aria-label={expanded ? "Show less" : "Show more"}
-          aria-expanded={snap !== "peek"}
-          onClick={() => settle(snap === "peek" ? "half" : snap === "half" ? "full" : "half")}
-          className="mx-auto flex h-6 w-16 items-center justify-center"
-        >
-          <span className="h-1 w-10 rounded-full bg-line" />
-        </button>
-        <div className="flex items-start gap-3">
-          <PlotSummary plot={model.plot} section={model.section} headingId={headingId} />
-          <IconButton
-            label="Close plot details"
-            variant="ghost"
-            size="sm"
-            icon={<X aria-hidden="true" className="size-4" />}
-            onClick={onClose}
-            className="-mr-1 ml-auto"
-          />
-        </div>
-      </div>
-      <m.div
-        key={model.plot.id}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.2 }}
-        className="flex min-h-0 flex-1 flex-col"
-      >
-        <div ref={bodyRef} className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pb-6">
-          <PlotDetailsBody
+      {reserving && reservation ? (
+        <>
+          <div
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
+            onPointerCancel={handlePointerUp}
+            className="shrink-0 cursor-grab touch-none pt-1 select-none active:cursor-grabbing"
+          >
+            <span aria-hidden="true" className="mx-auto flex h-5 w-16 items-center justify-center">
+              <span className="h-1 w-10 rounded-full bg-line" />
+            </span>
+          </div>
+          <ReserveFlow
             model={model}
+            reservation={reservation}
+            buyer={buyer}
             selectedPackage={selectedPackage}
             onSelectPackage={onSelectPackage}
-            onViewPlot={onViewPlot}
+            onProceedToPayment={onProceedToPayment}
+            onClose={onClose}
           />
-        </div>
-        {model.plot.status === "available" && (
-          <div
-            ref={footerRef}
-            className="shrink-0 border-t border-line-subtle px-5 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))]"
+        </>
+      ) : (
+        <>
+        <div
+          ref={headerRef}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerCancel={handlePointerUp}
+          className="shrink-0 cursor-grab touch-none px-5 pb-4 select-none active:cursor-grabbing"
+        >
+          <button
+            type="button"
+            aria-label={expanded ? "Show less" : "Show more"}
+            aria-expanded={snap !== "peek"}
+            onClick={() => settle(snap === "peek" ? "half" : snap === "half" ? "full" : "half")}
+            className="mx-auto flex h-6 w-16 items-center justify-center"
           >
-            <ReserveBar
-              pkg={selectedPackage}
-              price={model.plot.basePrice * selectedPackage.priceMultiplier}
-              currency={model.currency}
-              onReserve={onReserve}
+            <span className="h-1 w-10 rounded-full bg-line" />
+          </button>
+          <div className="flex items-start gap-3">
+            <PlotSummary plot={model.plot} section={model.section} headingId={headingId} />
+            <IconButton
+              label="Close plot details"
+              variant="ghost"
+              size="sm"
+              icon={<X aria-hidden="true" className="size-4" />}
+              onClick={onClose}
+              className="-mr-1 ml-auto"
             />
           </div>
-        )}
-      </m.div>
+        </div>
+        <m.div
+          key={model.plot.id}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.2 }}
+          className="flex min-h-0 flex-1 flex-col"
+        >
+          <div ref={bodyRef} className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pb-6">
+            <PlotDetailsBody
+              model={model}
+              selectedPackage={selectedPackage}
+              onSelectPackage={onSelectPackage}
+              onViewPlot={onViewPlot}
+            />
+          </div>
+          {model.plot.status === "available" && (
+            <div
+              ref={footerRef}
+              className="shrink-0 border-t border-line-subtle px-5 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))]"
+            >
+              <ReserveBar
+                pkg={selectedPackage}
+                price={model.plot.basePrice * selectedPackage.priceMultiplier}
+                currency={model.currency}
+                onReserve={onReserve}
+              />
+            </div>
+          )}
+        </m.div>
+        </>
+      )}
     </m.section>
   )
 }
