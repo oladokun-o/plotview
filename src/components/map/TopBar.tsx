@@ -45,7 +45,7 @@ export function TopBar({ layout, branding, onPick, ref, inert, className }: TopB
       <div className={cn("items-center gap-3 pl-1 md:flex md:pl-0", searchOpen ? "hidden" : "flex")}>
         <Image src={branding.logoPath} alt="" width={36} height={36} unoptimized className="size-9 shrink-0" />
         <div className="min-w-0 flex-1">
-          <p className="truncate font-display text-[17px] leading-tight text-primary">{branding.siteName}</p>
+          <h1 className="truncate font-display text-[17px] leading-tight text-primary">{branding.siteName}</h1>
           <p className="hidden truncate text-xs text-secondary md:block">{branding.tagline}</p>
         </div>
         <IconButton

@@ -53,10 +53,11 @@ export function SearchBox({ layout, onPick, onDismiss, inputRef, className }: Se
         pick(result)
       }
     } else if (event.key === "Escape") {
-      if (open && hasQuery) {
-        setQuery("")
-      } else if (open) {
+      // As in the ARIA combobox pattern: close the list, then clear the field, then leave.
+      if (showList) {
         setOpen(false)
+      } else if (hasQuery) {
+        setQuery("")
       } else {
         onDismiss?.()
       }

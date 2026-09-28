@@ -10,6 +10,7 @@ import type { Package } from "@/types/layout"
 import { PlotDetailsBody } from "./PlotDetailsBody"
 import { PlotSummary } from "./PlotSummary"
 import { ReserveBar } from "./ReserveBar"
+import { useReturnedFromFlow } from "./useReturnedFromFlow"
 import type { PlotDetailsModel } from "./types"
 
 type Snap = "peek" | "half" | "full"
@@ -66,6 +67,7 @@ export function SheetSurface({
   const headingId = useId()
   // Forms need the room: while reserving, the sheet stays at full height.
   const reserving = reservation?.plotId === model.plot.id
+  const returnedFromFlow = useReturnedFromFlow(model.plot.id, reserving)
   const headerRef = useRef<HTMLDivElement>(null)
   const bodyRef = useRef<HTMLDivElement>(null)
   const footerRef = useRef<HTMLDivElement>(null)
@@ -199,6 +201,7 @@ export function SheetSurface({
 
   return (
     <m.section
+      data-plot-details=""
       aria-labelledby={headingId}
       initial={{ y: "100%" }}
       animate={{ y: 0 }}
@@ -286,6 +289,7 @@ export function SheetSurface({
                 price={model.plot.basePrice * selectedPackage.priceMultiplier}
                 currency={model.currency}
                 onReserve={onReserve}
+                focusOnMount={returnedFromFlow}
               />
             </div>
           )}
