@@ -37,6 +37,10 @@ export function MapScene({ layout, geometry, view, onKeyDown, arriving, morphing
         height={geometry.height}
         viewBox={`0 0 ${geometry.width} ${geometry.height}`}
         className="group/scene block overflow-visible"
+        // Chromium sizes SVG text for the screen from the zoom at layout time and
+        // does not redo it when the camera moves, so text drawn after a camera move
+        // could come out at the wrong size. Geometric text scales with the map instead.
+        textRendering="geometricPrecision"
         data-view={view}
         data-arriving={arriving || undefined}
         data-morphing={morphing || undefined}
