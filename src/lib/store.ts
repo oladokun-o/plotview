@@ -13,12 +13,35 @@ import { useSyncExternalStore } from "react"
 
 export type MapView = "grid" | "sitemap"
 
+/** The reserve flow's steps, in order. */
+export const RESERVE_STEPS = ["package", "details", "invoice", "payment"] as const
+export type ReserveStep = (typeof RESERVE_STEPS)[number]
+
+export interface BuyerDetails {
+  fullName: string
+  phone: string
+  email: string
+  /** Optional; an empty string when not given. */
+  relationship: string
+}
+
+/** A reservation in progress for one plot. */
+export interface Reservation {
+  plotId: string
+  step: ReserveStep
+  /** Issued when the invoice step is first reached, then kept. */
+  invoiceNumber: string | null
+}
+
 export interface AppState {
   view: MapView
   availableOnly: boolean
   selectedPlotId: string | null
   /** The package chosen in the detail panel; carried into the reserve flow. */
   selectedPackageId: string | null
+  reservation: Reservation | null
+  /** Kept across plots and back navigation, so nothing has to be typed twice. */
+  buyer: BuyerDetails
 }
 
 type Preferences = Pick<AppState, "view" | "availableOnly">
@@ -30,6 +53,8 @@ const DEFAULT_STATE: AppState = {
   availableOnly: false,
   selectedPlotId: null,
   selectedPackageId: null,
+  reservation: null,
+  buyer: { fullName: "", phone: "", email: "", relationship: "" },
 }
 
 let state: AppState = DEFAULT_STATE
@@ -116,7 +141,28 @@ export const appActions = {
     setState({ availableOnly })
   },
   selectPlot(plotId: string | null) {
-    setState({ selectedPlotId: plotId })
+    // Choosing another plot (or none) leaves the reserve flow; the buyer's details stay.
+    const reservation = state.reservation?.plotId === plotId ? state.reservation : null
+    setState({ selectedPlotId: plotId, reservation })
+  },
+  startReservation(plotId: string) {
+    setState({ reservation: { plotId, step: "package", invoiceNumber: null } })
+  },
+  goToReserveStep(step: ReserveStep) {
+    if (state.reservation) {
+      setState({ reservation: { ...state.reservation, step } })
+    }
+  },
+  issueInvoiceNumber(invoiceNumber: string) {
+    if (state.reservation && !state.reservation.invoiceNumber) {
+      setState({ reservation: { ...state.reservation, invoiceNumber } })
+    }
+  },
+  endReservation() {
+    setState({ reservation: null })
+  },
+  updateBuyer(patch: Partial<BuyerDetails>) {
+    setState({ buyer: { ...state.buyer, ...patch } })
   },
   selectPackage(packageId: string) {
     setState({ selectedPackageId: packageId })
