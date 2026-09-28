@@ -110,3 +110,45 @@
     animation: none;
   }
 }
+
+/*
+ * With reduced motion the views do not morph; the new one cross-fades in.
+ * Two keyframe names so the animation restarts each time data-view changes.
+ * It sits in the base layer beside the global rule that shortens every
+ * animation, so its more specific !important wins (a layered !important would
+ * otherwise beat an unlayered one).
+ */
+@keyframes view-fade-grid {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes view-fade-sitemap {
+  from {
+    opacity: 0;
+  }
+}
+
+@layer base {
+  @media (prefers-reduced-motion: reduce) {
+    [data-view="grid"] {
+      animation: view-fade-grid var(--duration-base) var(--ease-standard) !important;
+    }
+
+    [data-view="sitemap"] {
+      animation: view-fade-sitemap var(--duration-base) var(--ease-standard) !important;
+    }
+  }
+}
+
+/* The map's loading hint waits before appearing, so fast loads never see it. */
+@keyframes loading-hint {
+  from {
+    opacity: 0;
+  }
+}
+
+[data-loading-hint] {
+  animation: loading-hint var(--duration-slow) var(--ease-standard) 400ms both;
+}

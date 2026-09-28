@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes, ReactNode } from "react"
+import type { ButtonHTMLAttributes, ReactNode, Ref } from "react"
 import { cn } from "@/lib/cn"
 import { Spinner } from "./Spinner"
 
@@ -11,6 +11,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   loading?: boolean
   fullWidth?: boolean
   leadingIcon?: ReactNode
+  ref?: Ref<HTMLButtonElement>
 }
 
 const VARIANT_CLASS: Record<ButtonVariant, string> = {

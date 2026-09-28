@@ -26,7 +26,7 @@ export function TextField({ id, label, value, onValueChange, optional, hint, err
         onChange={(event) => onValueChange(event.target.value)}
         aria-invalid={error ? true : undefined}
         aria-describedby={describedBy(id, hint, error)}
-        className={cn(CONTROL_CLASS, error ? "ring-danger-edge" : "ring-line", className)}
+        className={cn(CONTROL_CLASS, error ? "ring-danger-edge" : "ring-line-control", className)}
         {...rest}
       />
     </FieldShell>

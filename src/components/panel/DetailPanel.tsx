@@ -10,6 +10,7 @@ import type { Package } from "@/types/layout"
 import { PlotDetailsBody } from "./PlotDetailsBody"
 import { PlotSummary } from "./PlotSummary"
 import { ReserveBar } from "./ReserveBar"
+import { useReturnedFromFlow } from "./useReturnedFromFlow"
 import type { PlotDetailsModel } from "./types"
 
 interface DetailPanelProps {
@@ -45,6 +46,7 @@ export function DetailPanel({
 }: DetailPanelProps) {
   const headingId = useId()
   const reserving = model !== null && reservation?.plotId === model.plot.id
+  const returnedFromFlow = useReturnedFromFlow(model?.plot.id ?? "", reserving)
 
   return (
     <LazyMotion features={domAnimation} strict>
@@ -53,6 +55,7 @@ export function DetailPanel({
           {model && (
             <m.aside
               key="detail-panel"
+              data-plot-details=""
               aria-labelledby={headingId}
               initial={{ opacity: 0, x: -20, width, top }}
               animate={{ opacity: 1, x: 0, width, top }}
@@ -113,6 +116,7 @@ export function DetailPanel({
                         price={model.plot.basePrice * selectedPackage.priceMultiplier}
                         currency={model.currency}
                         onReserve={onReserve}
+                        focusOnMount={returnedFromFlow}
                       />
                     </div>
                   )}

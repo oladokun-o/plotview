@@ -120,18 +120,20 @@
   --border-subtle: var(--stone-200);
   --border-default: var(--stone-300);
   --border-strong: var(--stone-500);
+  /* Form field outlines: 3:1 against the panel, so a field is findable by its edge alone. */
+  --border-control: color-mix(in oklab, var(--stone-400) 50%, var(--stone-500));
 
   --accent: var(--brand);
   --accent-hover: color-mix(in oklab, var(--brand) 86%, black);
   --accent-soft: color-mix(in oklab, var(--brand) 10%, var(--stone-0));
   --accent-text: var(--brand);
   --text-on-accent: var(--stone-0);
-  --focus-ring: color-mix(in oklab, var(--brand) 70%, var(--stone-0));
+  --focus-ring: color-mix(in oklab, var(--brand) 85%, var(--stone-0));
   --danger: var(--rust-700);
   --danger-edge: var(--rust-500);
 
   --status-available-fill: var(--lichen-100);
-  --status-available-edge: var(--lichen-500);
+  --status-available-edge: color-mix(in oklab, var(--lichen-500) 85%, var(--lichen-700));
   --status-available-mark: var(--lichen-700);
   --status-reserved-fill: var(--clay-100);
   --status-reserved-edge: var(--clay-500);
@@ -182,6 +184,7 @@
     --border-subtle: var(--stone-800);
     --border-default: var(--stone-700);
     --border-strong: var(--stone-500);
+    --border-control: color-mix(in oklab, var(--stone-600) 50%, var(--stone-500));
 
     /* A living green on dark surfaces: pale enough for dark text, saturated enough to read as active. */
     --accent: color-mix(in oklab, var(--brand) 30%, var(--lichen-300));
@@ -251,6 +254,7 @@
   --color-line-subtle: var(--border-subtle);
   --color-line: var(--border-default);
   --color-line-strong: var(--border-strong);
+  --color-line-control: var(--border-control);
 
   --color-accent: var(--accent);
   --color-accent-hover: var(--accent-hover);

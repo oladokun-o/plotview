@@ -38,7 +38,7 @@ export function SelectField({
           onChange={(event) => onValueChange(event.target.value)}
           aria-invalid={error ? true : undefined}
           aria-describedby={describedBy(id, hint, error)}
-          className={cn(CONTROL_CLASS, "appearance-none pr-9", value ? "text-primary" : "text-tertiary", error ? "ring-danger-edge" : "ring-line")}
+          className={cn(CONTROL_CLASS, "appearance-none pr-9", value ? "text-primary" : "text-tertiary", error ? "ring-danger-edge" : "ring-line-control")}
           {...rest}
         >
           <option value="">{placeholder}</option>

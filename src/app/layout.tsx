@@ -10,10 +10,12 @@ const uiFont = Geist({
   subsets: ["latin"],
 });
 
+// Display type uses one weight; a single static weight is a third the size of the variable file.
 const serifFont = Newsreader({
   variable: "--font-serif",
   subsets: ["latin"],
   style: ["normal"],
+  weight: "400",
 });
 
 const siteBranding: Branding = branding;
@@ -21,6 +23,7 @@ const siteBranding: Branding = branding;
 export const metadata: Metadata = {
   title: siteBranding.siteName,
   description: siteBranding.tagline,
+  icons: { icon: siteBranding.logoPath },
 };
 
 export const viewport: Viewport = {

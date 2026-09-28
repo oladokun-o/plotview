@@ -1,6 +1,7 @@
 "use client"
 
-import { useEffect, useRef, type ReactNode } from "react"
+import type { ReactNode } from "react"
+import { useFocusOnMount } from "@/lib/useFocusOnMount"
 
 interface StepHeadingProps {
   children: ReactNode
@@ -12,12 +13,8 @@ interface StepHeadingProps {
  * keyboard and screen reader users land at the start of the new step.
  */
 export function StepHeading({ children, description }: StepHeadingProps) {
-  const headingRef = useRef<HTMLHeadingElement>(null)
-
   // Steps remount when the step changes, so focusing on mount lands on each new step.
-  useEffect(() => {
-    headingRef.current?.focus({ preventScroll: true })
-  }, [])
+  const headingRef = useFocusOnMount<HTMLHeadingElement>()
 
   return (
     <div className="mb-4 md:mb-5">

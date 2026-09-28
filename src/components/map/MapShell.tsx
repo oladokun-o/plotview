@@ -65,8 +65,10 @@ interface MapShellProps {
 
 /** Space kept clear around the map for the floating controls, in pixels. */
 const EDGE = 16
-/** The filter row under the top bar. */
+/** The filter row under the top bar on a phone, where the legend folds into one button. */
 const FILTER_ROW = 44
+/** Space between the top bar and the filter row. */
+const ROW_GAP = 8
 /** Desktop detail panel width. The reserve flow gets more room: 40% of the window, within these bounds. */
 const PANEL_WIDTH = 360
 const FLOW_PANEL_MAX = 480
@@ -127,11 +129,15 @@ export function MapShell({ layout: sourceLayout, branding }: MapShellProps) {
 
   const [viewportRef, viewportSize] = useElementSize<HTMLDivElement>()
   const [topBarRef, topBarSize] = useElementSize<HTMLDivElement>()
+  const [filterRowRef, filterRowSize] = useElementSize<HTMLDivElement>()
+  // On wider screens the legend is inline and can wrap to a second line (a narrow
+  // tablet, or the site map note beside it), so the row is measured, not assumed.
+  const filterRow = isDesktop && filterRowSize.height > 0 ? filterRowSize.height + ROW_GAP : FILTER_ROW
 
   // The controls always float over these edges.
   const baseInsets = useMemo<Insets>(
-    () => ({ top: topBarSize.height + FILTER_ROW + EDGE * 1.5, right: EDGE, bottom: EDGE, left: EDGE }),
-    [topBarSize.height],
+    () => ({ top: topBarSize.height + filterRow + EDGE * 1.5, right: EDGE, bottom: EDGE, left: EDGE }),
+    [topBarSize.height, filterRow],
   )
   // The detail panel or sheet covers more while a plot is selected; the camera keeps plots out from under it.
   const panelOpen = selectedPlotId !== null
@@ -432,6 +438,7 @@ export function MapShell({ layout: sourceLayout, branding }: MapShellProps) {
     if (plotId) {
       setInkPlotId(plotId)
       setCameraRequest({ kind: "reveal", plotId })
+      focusPlot(plotId)
     }
   }
 
@@ -452,12 +459,30 @@ export function MapShell({ layout: sourceLayout, branding }: MapShellProps) {
     return () => clearTimeout(timer)
   }, [])
 
+  /**
+   * Closes the plot details. When focus was inside them it goes back to the plot
+   * they were about, as when a dialog closes; focus elsewhere is left alone.
+   */
+  function closeDetails() {
+    const plotId = getAppState().selectedPlotId
+    const active = document.activeElement
+    const focusWasInside = !active || active === document.body || active.closest("[data-plot-details]") !== null
+    appActions.selectPlot(null)
+    if (plotId && focusWasInside) {
+      focusPlot(plotId)
+    }
+  }
+  const closeDetailsRef = useRef(closeDetails)
+  useEffect(() => {
+    closeDetailsRef.current = closeDetails
+  })
+
   // Escape clears the selection from anywhere except a text field (search handles its own Escape).
   useEffect(() => {
     function handleKeyDown(event: globalThis.KeyboardEvent) {
       const inField = event.target instanceof HTMLElement && event.target.closest("input, textarea, select")
       if (event.key === "Escape" && !inField && getAppState().selectedPlotId) {
-        appActions.selectPlot(null)
+        closeDetailsRef.current()
       }
     }
     window.addEventListener("keydown", handleKeyDown)
@@ -500,6 +525,9 @@ export function MapShell({ layout: sourceLayout, branding }: MapShellProps) {
     }
   }
 
+  // Set while focus is moved to a plot in code: the camera is already on its way there.
+  const quietFocusPlotId = useRef<string | null>(null)
+
   const handleFocusChange = useCallback(
     (plotId: string | null, visible: boolean) => {
       setFocusPlotId(visible ? plotId : null)
@@ -507,13 +535,30 @@ export function MapShell({ layout: sourceLayout, branding }: MapShellProps) {
         return
       }
       setTabStopPlotId(plotId)
+      const quiet = quietFocusPlotId.current === plotId
+      quietFocusPlotId.current = null
       const bounds = geometry.plotBounds.get(plotId)
-      if (visible && bounds) {
+      if (visible && bounds && !quiet) {
         camera.current?.reveal(bounds)
       }
     },
     [geometry],
   )
+
+  /**
+   * Puts keyboard focus on a plot after search or the reserve flow, so the next
+   * arrow key or Tab carries on from the plot on screen instead of the top of the page.
+   */
+  function focusPlot(plotId: string) {
+    setTabStopPlotId(plotId)
+    requestAnimationFrame(() => {
+      const plot = sceneRef.current?.querySelector<SVGGElement>(`[data-plot-id="${CSS.escape(plotId)}"]`)
+      if (plot && document.activeElement !== plot) {
+        quietFocusPlotId.current = plotId
+        plot.focus({ preventScroll: true })
+      }
+    })
+  }
 
   // A click anywhere on the map that is not on a plot clears the selection.
   // Drags never reach here: the viewport swallows the click that ends a drag.
@@ -540,18 +585,58 @@ export function MapShell({ layout: sourceLayout, branding }: MapShellProps) {
   function handlePick(result: SearchResult) {
     if (result.kind === "plot") {
       appActions.selectPlot(result.plot.id)
-      setTabStopPlotId(result.plot.id)
       setCameraRequest({ kind: "focus", plotId: result.plot.id })
+      focusPlot(result.plot.id)
     } else {
       const bounds = geometry.sectionBounds.get(result.section.id)
       if (bounds) {
         camera.current?.focus(bounds, { fill: 0.9, maxScale: 3 })
+      }
+      const firstPlot = result.section.plots[0]
+      if (firstPlot) {
+        focusPlot(firstPlot.id)
       }
     }
   }
 
   return (
     <main className="relative h-dvh w-full overflow-hidden bg-canvas">
+      {/* Source order is tab order: search and filters, then the map, the plot details, and the map tools. */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-10 grid grid-cols-[1fr_auto] items-start gap-2 p-3 md:grid-cols-[360px_1fr_auto] md:p-4">
+        <TopBar
+          ref={topBarRef}
+          layout={layout}
+          branding={branding}
+          onPick={handlePick}
+          inert={reservingOnDesktop || undefined}
+          className={cn(
+            "relative z-20 col-span-2 transition-opacity duration-300 ease-standard md:col-span-1",
+            reservingOnDesktop && "pointer-events-none opacity-0",
+          )}
+        />
+        <div
+          ref={filterRowRef}
+          inert={reservingOnDesktop || undefined}
+          className={cn(
+            "col-start-1 row-start-2 flex flex-wrap items-start gap-2 transition-opacity duration-300 ease-standard md:col-span-2",
+            reservingOnDesktop && "pointer-events-none opacity-0",
+          )}
+        >
+          <AvailableOnlyToggle checked={availableOnly} onChange={appActions.setAvailableOnly} />
+          <Legend counts={counts} />
+        </div>
+        {hasSiteMap && (
+          <div className="col-start-2 row-start-2 justify-self-end md:col-start-3 md:row-start-1">
+            <ViewToggle view={view} onChange={handleViewChange} />
+          </div>
+        )}
+        {hasSiteMap && view === "sitemap" && (
+          <div className="col-span-2 row-start-3 justify-self-end md:col-span-1 md:col-start-3 md:row-start-2">
+            <SiteMapNote />
+          </div>
+        )}
+      </div>
+
       <div
         ref={viewportRef}
         onClick={handleMapClick}
@@ -596,49 +681,6 @@ export function MapShell({ layout: sourceLayout, branding }: MapShellProps) {
         />
       </div>
 
-      <div className="pointer-events-none absolute inset-x-0 top-0 z-10 grid grid-cols-[1fr_auto] items-start gap-2 p-3 md:grid-cols-[360px_1fr_auto] md:p-4">
-        <TopBar
-          ref={topBarRef}
-          layout={layout}
-          branding={branding}
-          onPick={handlePick}
-          inert={reservingOnDesktop || undefined}
-          className={cn(
-            "relative z-20 col-span-2 transition-opacity duration-300 ease-standard md:col-span-1",
-            reservingOnDesktop && "pointer-events-none opacity-0",
-          )}
-        />
-        <div
-          inert={reservingOnDesktop || undefined}
-          className={cn(
-            "col-start-1 row-start-2 flex flex-wrap items-start gap-2 transition-opacity duration-300 ease-standard md:col-span-2",
-            reservingOnDesktop && "pointer-events-none opacity-0",
-          )}
-        >
-          <AvailableOnlyToggle checked={availableOnly} onChange={appActions.setAvailableOnly} />
-          <Legend counts={counts} />
-        </div>
-        {hasSiteMap && (
-          <div className="col-start-2 row-start-2 justify-self-end md:col-start-3 md:row-start-1">
-            <ViewToggle view={view} onChange={handleViewChange} />
-          </div>
-        )}
-        {hasSiteMap && view === "sitemap" && (
-          <div className="col-span-2 row-start-3 justify-self-end md:col-span-1 md:col-start-3 md:row-start-2">
-            <SiteMapNote />
-          </div>
-        )}
-      </div>
-
-      <div
-        style={isDesktop ? { left: panelOpen ? panelSpace : EDGE } : undefined}
-        className="pointer-events-none absolute bottom-[max(0.75rem,env(safe-area-inset-bottom))] left-3 z-10 flex items-center gap-2 transition-[left] duration-300 ease-standard md:bottom-4"
-      >
-        <SampleDataBadge />
-        {/* Hidden mid-reservation so a stray tap cannot throw away what was typed. */}
-        {!reservation && <ResetDemoControl />}
-      </div>
-
       {isDesktop ? (
         <DetailPanel
           model={detailsModel}
@@ -652,7 +694,7 @@ export function MapShell({ layout: sourceLayout, branding }: MapShellProps) {
           onViewPlot={handleViewPlot}
           onReserve={handleReserve}
           onBackToMap={handleBackToMap}
-          onClose={() => appActions.selectPlot(null)}
+          onClose={closeDetails}
         />
       ) : (
         <BottomSheet
@@ -665,7 +707,7 @@ export function MapShell({ layout: sourceLayout, branding }: MapShellProps) {
           onViewPlot={handleViewPlot}
           onReserve={handleReserve}
           onBackToMap={handleBackToMap}
-          onClose={() => appActions.selectPlot(null)}
+          onClose={closeDetails}
           onHeightChange={setSheetHeight}
         />
       )}
@@ -676,6 +718,15 @@ export function MapShell({ layout: sourceLayout, branding }: MapShellProps) {
           onZoomOut={() => camera.current?.zoomOut()}
           onRecentre={() => camera.current?.fit()}
         />
+      </div>
+
+      <div
+        style={isDesktop ? { left: panelOpen ? panelSpace : EDGE } : undefined}
+        className="pointer-events-none absolute bottom-[max(0.75rem,env(safe-area-inset-bottom))] left-3 z-10 flex items-center gap-2 transition-[left] duration-300 ease-standard md:bottom-4"
+      >
+        <SampleDataBadge />
+        {/* Hidden mid-reservation so a stray tap cannot throw away what was typed. */}
+        {!reservation && <ResetDemoControl />}
       </div>
     </main>
   )

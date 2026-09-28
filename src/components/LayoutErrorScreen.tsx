@@ -6,6 +6,9 @@ interface LayoutErrorScreenProps {
 }
 
 export function LayoutErrorScreen({ issue }: LayoutErrorScreenProps) {
+  // Validator messages read as "path: expected ..."; shown on their own they start a sentence.
+  const problem = issue.message.charAt(0).toUpperCase() + issue.message.slice(1)
+
   return (
     <main className="flex flex-1 items-center justify-center bg-canvas px-4 py-10">
       <Surface variant="panel" className="w-full max-w-lg p-6 sm:p-8">
@@ -23,7 +26,7 @@ export function LayoutErrorScreen({ issue }: LayoutErrorScreenProps) {
           </div>
           <div>
             <dt className="text-xs text-tertiary">Problem</dt>
-            <dd className="mt-0.5 text-primary">{issue.message}</dd>
+            <dd className="mt-0.5 text-primary">{problem}</dd>
           </div>
         </dl>
 

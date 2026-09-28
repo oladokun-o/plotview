@@ -53,10 +53,11 @@ export function SearchBox({ layout, onPick, onDismiss, inputRef, className }: Se
         pick(result)
       }
     } else if (event.key === "Escape") {
-      if (open && hasQuery) {
-        setQuery("")
-      } else if (open) {
+      // As in the ARIA combobox pattern: close the list, then clear the field, then leave.
+      if (showList) {
         setOpen(false)
+      } else if (hasQuery) {
+        setQuery("")
       } else {
         onDismiss?.()
       }
@@ -65,7 +66,7 @@ export function SearchBox({ layout, onPick, onDismiss, inputRef, className }: Se
 
   return (
     <div className={cn("relative", className)}>
-      <div className="flex h-11 items-center gap-2 rounded-md bg-sunken px-3 ring-1 ring-inset ring-line-subtle transition-shadow duration-150 focus-within:ring-2 focus-within:ring-focus">
+      <div className="flex h-11 items-center gap-2 rounded-md bg-sunken px-3 ring-1 ring-inset ring-line-control transition-shadow duration-150 focus-within:ring-2 focus-within:ring-focus">
         <Search aria-hidden="true" className="size-4 shrink-0 text-tertiary" />
         <input
           ref={localInputRef}
