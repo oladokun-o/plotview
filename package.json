@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "generate:layout": "node scripts/generate-sample-layout.mjs"
   },
   "dependencies": {
     "next": "16.3.6",
