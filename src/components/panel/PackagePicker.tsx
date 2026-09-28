@@ -8,17 +8,19 @@ interface PackagePickerProps {
   currency: string
   selectedId: string
   onSelect: (packageId: string) => void
+  /** Hide the visible "Choose a package" line when a step heading already says it. */
+  hideLegend?: boolean
 }
 
 /** The ways this plot can be reserved, each with its price for this plot. */
-export function PackagePicker({ packages, basePrice, currency, selectedId, onSelect }: PackagePickerProps) {
+export function PackagePicker({ packages, basePrice, currency, selectedId, onSelect, hideLegend }: PackagePickerProps) {
   const name = useId()
   const labelId = useId()
 
   return (
     <fieldset aria-labelledby={labelId}>
       <div className="flex items-baseline justify-between gap-3">
-        <legend id={labelId} className="text-sm font-medium text-primary">
+        <legend id={labelId} className={hideLegend ? "sr-only" : "text-sm font-medium text-primary"}>
           Choose a package
         </legend>
         <span className="text-xs text-tertiary">Sample prices</span>

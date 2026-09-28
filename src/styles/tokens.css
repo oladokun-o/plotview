@@ -42,6 +42,11 @@
   --clay-700: #7a5426;
   --clay-900: #3a2a16;
 
+  /* Rust: errors, kept muted so a form mistake never reads as alarming */
+  --rust-300: #e3a08c;
+  --rust-500: #b25a42;
+  --rust-700: #8c3f2c;
+
   --slate-50: #eeefec;
   --slate-100: #dfe1dc;
   --slate-300: #b4b8b1;
@@ -121,6 +126,8 @@
   --accent-text: var(--brand);
   --text-on-accent: var(--stone-0);
   --focus-ring: color-mix(in oklab, var(--brand) 70%, var(--stone-0));
+  --danger: var(--rust-700);
+  --danger-edge: var(--rust-500);
 
   --status-available-fill: var(--lichen-100);
   --status-available-edge: var(--lichen-500);
@@ -182,6 +189,8 @@
     --accent-text: color-mix(in oklab, var(--brand) 20%, var(--lichen-300));
     --text-on-accent: var(--stone-950);
     --focus-ring: color-mix(in oklab, var(--brand) 40%, var(--stone-50));
+    --danger: var(--rust-300);
+    --danger-edge: var(--rust-300);
 
     /* Lifted off the dark surfaces so plots read as filled shapes, not outlines. */
     --status-available-fill: color-mix(in oklab, var(--lichen-700) 70%, var(--stone-900));
@@ -248,6 +257,8 @@
   --color-accent-text: var(--accent-text);
   --color-on-accent: var(--text-on-accent);
   --color-focus: var(--focus-ring);
+  --color-danger: var(--danger);
+  --color-danger-edge: var(--danger-edge);
 
   --color-available: var(--status-available-fill);
   --color-available-edge: var(--status-available-edge);

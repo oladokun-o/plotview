@@ -106,6 +106,8 @@ export function MapShell({ layout, branding }: MapShellProps) {
   const availableOnly = useAppState((state) => state.availableOnly)
   const selectedPlotId = useAppState((state) => state.selectedPlotId)
   const selectedPackageId = useAppState((state) => state.selectedPackageId)
+  const reservation = useAppState((state) => state.reservation)
+  const buyer = useAppState((state) => state.buyer)
   const isDesktop = useMediaQuery("(min-width: 768px)")
   const [sheetHeight, setSheetHeight] = useState(0)
 
@@ -391,7 +393,14 @@ export function MapShell({ layout, branding }: MapShellProps) {
   }
 
   function handleReserve() {
-    // The reserve flow takes over the panel from here (phase 6).
+    const plotId = getAppState().selectedPlotId
+    if (plotId) {
+      appActions.startReservation(plotId)
+    }
+  }
+
+  function handleProceedToPayment() {
+    // Payment is the next step of the flow (phase 7).
   }
 
   // Warm the deferred chunks once the page is idle, so the first selection or view switch never waits.
@@ -584,20 +593,26 @@ export function MapShell({ layout, branding }: MapShellProps) {
         <DetailPanel
           model={detailsModel}
           selectedPackage={selectedPackage}
+          reservation={reservation}
+          buyer={buyer}
           top={baseInsets.top - EDGE / 2}
           onSelectPackage={appActions.selectPackage}
           onViewPlot={handleViewPlot}
           onReserve={handleReserve}
+          onProceedToPayment={handleProceedToPayment}
           onClose={() => appActions.selectPlot(null)}
         />
       ) : (
         <BottomSheet
           model={detailsModel}
           selectedPackage={selectedPackage}
+          reservation={reservation}
+          buyer={buyer}
           viewportHeight={viewport.height}
           onSelectPackage={appActions.selectPackage}
           onViewPlot={handleViewPlot}
           onReserve={handleReserve}
+          onProceedToPayment={handleProceedToPayment}
           onClose={() => appActions.selectPlot(null)}
           onHeightChange={setSheetHeight}
         />
