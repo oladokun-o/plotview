@@ -2,74 +2,1025 @@
   "site": {
     "name": "Sample Memorial Gardens",
     "currency": "USD",
-    "width": 1000,
-    "height": 800
+    "width": 1400,
+    "height": 1000
   },
+  "grounds": [
+    {
+      "id": "grounds",
+      "kind": "lawn",
+      "points": [
+        [
+          70,
+          60
+        ],
+        [
+          1330,
+          60
+        ],
+        [
+          1340,
+          960
+        ],
+        [
+          980,
+          975
+        ],
+        [
+          700,
+          990
+        ],
+        [
+          260,
+          975
+        ],
+        [
+          60,
+          950
+        ]
+      ]
+    },
+    {
+      "id": "chapel-forecourt",
+      "kind": "gravel",
+      "points": [
+        [
+          590,
+          170
+        ],
+        [
+          780,
+          170
+        ],
+        [
+          760,
+          225
+        ],
+        [
+          610,
+          225
+        ]
+      ]
+    },
+    {
+      "id": "gate-forecourt",
+      "kind": "gravel",
+      "points": [
+        [
+          540,
+          935
+        ],
+        [
+          690,
+          935
+        ],
+        [
+          700,
+          990
+        ],
+        [
+          530,
+          990
+        ]
+      ]
+    },
+    {
+      "id": "parking-surface",
+      "kind": "gravel",
+      "points": [
+        [
+          320,
+          842
+        ],
+        [
+          530,
+          842
+        ],
+        [
+          530,
+          954
+        ],
+        [
+          320,
+          954
+        ]
+      ]
+    },
+    {
+      "id": "pond-planting",
+      "kind": "planting",
+      "points": [
+        [
+          1282.6,
+          850
+        ],
+        [
+          1268.2,
+          874.8
+        ],
+        [
+          1250.1,
+          897
+        ],
+        [
+          1218.7,
+          911.1
+        ],
+        [
+          1189.6,
+          928.7
+        ],
+        [
+          1150,
+          938.7
+        ],
+        [
+          1108,
+          933.6
+        ],
+        [
+          1065.3,
+          925.3
+        ],
+        [
+          1049.3,
+          897.3
+        ],
+        [
+          1036.7,
+          873.8
+        ],
+        [
+          1031.9,
+          850
+        ],
+        [
+          1030.4,
+          824.9
+        ],
+        [
+          1055.3,
+          805.5
+        ],
+        [
+          1068.4,
+          777.5
+        ],
+        [
+          1112.5,
+          775.4
+        ],
+        [
+          1150,
+          771.9
+        ],
+        [
+          1187.6,
+          775.3
+        ],
+        [
+          1229.9,
+          778.9
+        ],
+        [
+          1246.5,
+          804.7
+        ],
+        [
+          1280.5,
+          822.6
+        ]
+      ]
+    },
+    {
+      "id": "pond",
+      "kind": "water",
+      "points": [
+        [
+          1237.9,
+          850
+        ],
+        [
+          1230.2,
+          866.9
+        ],
+        [
+          1213.9,
+          881
+        ],
+        [
+          1191.6,
+          891.7
+        ],
+        [
+          1164.6,
+          898
+        ],
+        [
+          1133.6,
+          903.9
+        ],
+        [
+          1103.1,
+          897
+        ],
+        [
+          1084.2,
+          881.9
+        ],
+        [
+          1071.8,
+          866.5
+        ],
+        [
+          1054.2,
+          850
+        ],
+        [
+          1066.1,
+          832.4
+        ],
+        [
+          1076.8,
+          814.5
+        ],
+        [
+          1107.8,
+          807.7
+        ],
+        [
+          1135,
+          800.7
+        ],
+        [
+          1164.7,
+          801.8
+        ],
+        [
+          1192.4,
+          807.5
+        ],
+        [
+          1219.8,
+          816.1
+        ],
+        [
+          1238,
+          831.5
+        ]
+      ]
+    },
+    {
+      "id": "chapel-garden-west",
+      "kind": "planting",
+      "points": [
+        [
+          575.2,
+          120
+        ],
+        [
+          567.8,
+          134.4
+        ],
+        [
+          555,
+          148.4
+        ],
+        [
+          527.5,
+          151.1
+        ],
+        [
+          502,
+          152.4
+        ],
+        [
+          479.3,
+          145.3
+        ],
+        [
+          467.7,
+          132.9
+        ],
+        [
+          460.5,
+          120
+        ],
+        [
+          468.8,
+          107.4
+        ],
+        [
+          472.8,
+          90
+        ],
+        [
+          502.9,
+          90
+        ],
+        [
+          529.2,
+          84.8
+        ],
+        [
+          554.4,
+          92
+        ],
+        [
+          575,
+          103.6
+        ]
+      ]
+    },
+    {
+      "id": "chapel-garden-east",
+      "kind": "planting",
+      "points": [
+        [
+          909,
+          110
+        ],
+        [
+          906.9,
+          123.4
+        ],
+        [
+          892.6,
+          135.3
+        ],
+        [
+          865.9,
+          135.5
+        ],
+        [
+          844.1,
+          135.5
+        ],
+        [
+          818.4,
+          134.6
+        ],
+        [
+          801.5,
+          123.8
+        ],
+        [
+          798.7,
+          110
+        ],
+        [
+          802.7,
+          96.5
+        ],
+        [
+          816.7,
+          84.3
+        ],
+        [
+          842.6,
+          81
+        ],
+        [
+          868,
+          79.5
+        ],
+        [
+          894.3,
+          83.6
+        ],
+        [
+          909.8,
+          95.9
+        ]
+      ]
+    },
+    {
+      "id": "office-garden",
+      "kind": "planting",
+      "points": [
+        [
+          911.2,
+          905
+        ],
+        [
+          906,
+          918.5
+        ],
+        [
+          891.6,
+          929.4
+        ],
+        [
+          870,
+          934.8
+        ],
+        [
+          849.5,
+          928.2
+        ],
+        [
+          828.9,
+          920.5
+        ],
+        [
+          827.1,
+          905
+        ],
+        [
+          824.5,
+          887.9
+        ],
+        [
+          844.3,
+          875.9
+        ],
+        [
+          870,
+          874.2
+        ],
+        [
+          893.8,
+          878.1
+        ],
+        [
+          913.8,
+          888.5
+        ]
+      ]
+    }
+  ],
+  "trees": [
+    {
+      "x": 95,
+      "y": 71.8,
+      "radius": 18.6
+    },
+    {
+      "x": 95,
+      "y": 960,
+      "radius": 20.8
+    },
+    {
+      "x": 160.9,
+      "y": 78.3,
+      "radius": 18
+    },
+    {
+      "x": 160.9,
+      "y": 970.1,
+      "radius": 18.5
+    },
+    {
+      "x": 219.4,
+      "y": 88.5,
+      "radius": 17.2
+    },
+    {
+      "x": 219.4,
+      "y": 965.7,
+      "radius": 18.8
+    },
+    {
+      "x": 284,
+      "y": 71.4,
+      "radius": 21.6
+    },
+    {
+      "x": 284,
+      "y": 968.4,
+      "radius": 18.2
+    },
+    {
+      "x": 342.1,
+      "y": 85.3,
+      "radius": 16.5
+    },
+    {
+      "x": 407,
+      "y": 89.5,
+      "radius": 18.8
+    },
+    {
+      "x": 474.3,
+      "y": 85.1,
+      "radius": 20.5
+    },
+    {
+      "x": 528.3,
+      "y": 74,
+      "radius": 16.6
+    },
+    {
+      "x": 769,
+      "y": 969.4,
+      "radius": 20.1
+    },
+    {
+      "x": 835.4,
+      "y": 72.7,
+      "radius": 22.4
+    },
+    {
+      "x": 835.4,
+      "y": 974.4,
+      "radius": 20.9
+    },
+    {
+      "x": 896.4,
+      "y": 80.4,
+      "radius": 21.6
+    },
+    {
+      "x": 896.4,
+      "y": 960.6,
+      "radius": 15.6
+    },
+    {
+      "x": 961.2,
+      "y": 73.5,
+      "radius": 20.5
+    },
+    {
+      "x": 961.2,
+      "y": 973.2,
+      "radius": 16.3
+    },
+    {
+      "x": 1014.4,
+      "y": 91.4,
+      "radius": 19.1
+    },
+    {
+      "x": 1014.4,
+      "y": 973.3,
+      "radius": 20.2
+    },
+    {
+      "x": 1070.9,
+      "y": 73,
+      "radius": 21.1
+    },
+    {
+      "x": 1070.9,
+      "y": 961.2,
+      "radius": 17.8
+    },
+    {
+      "x": 1126.6,
+      "y": 74.1,
+      "radius": 20.5
+    },
+    {
+      "x": 1126.6,
+      "y": 958.8,
+      "radius": 16.5
+    },
+    {
+      "x": 1191.8,
+      "y": 85,
+      "radius": 19.9
+    },
+    {
+      "x": 1191.8,
+      "y": 959.8,
+      "radius": 17.6
+    },
+    {
+      "x": 1252.8,
+      "y": 91.6,
+      "radius": 22.2
+    },
+    {
+      "x": 1252.8,
+      "y": 970.3,
+      "radius": 16.8
+    },
+    {
+      "x": 94.4,
+      "y": 130,
+      "radius": 20.8
+    },
+    {
+      "x": 1327.6,
+      "y": 130,
+      "radius": 19.7
+    },
+    {
+      "x": 77.8,
+      "y": 186.8,
+      "radius": 23.3
+    },
+    {
+      "x": 1317.4,
+      "y": 186.8,
+      "radius": 23.9
+    },
+    {
+      "x": 95.6,
+      "y": 249.2,
+      "radius": 20.6
+    },
+    {
+      "x": 1310.6,
+      "y": 249.2,
+      "radius": 21.1
+    },
+    {
+      "x": 82.3,
+      "y": 316.1,
+      "radius": 22.7
+    },
+    {
+      "x": 1316.9,
+      "y": 316.1,
+      "radius": 23.7
+    },
+    {
+      "x": 88,
+      "y": 388.7,
+      "radius": 22.5
+    },
+    {
+      "x": 1311.8,
+      "y": 388.7,
+      "radius": 23.6
+    },
+    {
+      "x": 88.8,
+      "y": 464.6,
+      "radius": 16.5
+    },
+    {
+      "x": 1329.4,
+      "y": 464.6,
+      "radius": 21.6
+    },
+    {
+      "x": 86.2,
+      "y": 531.3,
+      "radius": 16
+    },
+    {
+      "x": 1313.2,
+      "y": 531.3,
+      "radius": 23.5
+    },
+    {
+      "x": 80.2,
+      "y": 603.9,
+      "radius": 20.2
+    },
+    {
+      "x": 1311.6,
+      "y": 603.9,
+      "radius": 16.7
+    },
+    {
+      "x": 94.1,
+      "y": 676.4,
+      "radius": 18
+    },
+    {
+      "x": 1318.1,
+      "y": 676.4,
+      "radius": 22.7
+    },
+    {
+      "x": 88.5,
+      "y": 743.9,
+      "radius": 22.1
+    },
+    {
+      "x": 1315.5,
+      "y": 743.9,
+      "radius": 18.5
+    },
+    {
+      "x": 79.5,
+      "y": 813.1,
+      "radius": 17.5
+    },
+    {
+      "x": 1314.8,
+      "y": 813.1,
+      "radius": 20.5
+    },
+    {
+      "x": 86.6,
+      "y": 871.7,
+      "radius": 21.7
+    },
+    {
+      "x": 1312.7,
+      "y": 871.7,
+      "radius": 21.6
+    },
+    {
+      "x": 567,
+      "y": 820,
+      "radius": 17.9
+    },
+    {
+      "x": 663,
+      "y": 820,
+      "radius": 14.1
+    },
+    {
+      "x": 671.4,
+      "y": 741.6,
+      "radius": 17.1
+    },
+    {
+      "x": 583.8,
+      "y": 663.2,
+      "radius": 14.4
+    },
+    {
+      "x": 679.8,
+      "y": 663.2,
+      "radius": 15.8
+    },
+    {
+      "x": 592.2,
+      "y": 584.8,
+      "radius": 16.7
+    },
+    {
+      "x": 688.2,
+      "y": 584.8,
+      "radius": 14.5
+    },
+    {
+      "x": 600.6,
+      "y": 506.4,
+      "radius": 14.8
+    },
+    {
+      "x": 696.6,
+      "y": 506.4,
+      "radius": 14.7
+    },
+    {
+      "x": 609,
+      "y": 428,
+      "radius": 15.7
+    },
+    {
+      "x": 705,
+      "y": 428,
+      "radius": 15.5
+    },
+    {
+      "x": 617.4,
+      "y": 349.6,
+      "radius": 16.2
+    },
+    {
+      "x": 713.4,
+      "y": 349.6,
+      "radius": 15.3
+    },
+    {
+      "x": 625.8,
+      "y": 271.2,
+      "radius": 15.4
+    },
+    {
+      "x": 721.8,
+      "y": 271.2,
+      "radius": 17.2
+    },
+    {
+      "x": 1223.8,
+      "y": 778.9,
+      "radius": 26.5
+    },
+    {
+      "x": 1290.8,
+      "y": 846.4,
+      "radius": 21
+    },
+    {
+      "x": 1174.2,
+      "y": 744.8,
+      "radius": 18.8
+    },
+    {
+      "x": 1233.2,
+      "y": 943.8,
+      "radius": 23.5
+    },
+    {
+      "x": 1206.4,
+      "y": 341.1,
+      "radius": 27.1
+    },
+    {
+      "x": 1147.1,
+      "y": 276.8,
+      "radius": 27.5
+    },
+    {
+      "x": 1080.9,
+      "y": 351.2,
+      "radius": 19.7
+    },
+    {
+      "x": 1119.6,
+      "y": 373.1,
+      "radius": 26
+    }
+  ],
   "landmarks": [
     {
       "id": "main-gate",
       "kind": "gate",
       "label": "Main gate",
-      "x": 440,
-      "y": 750,
-      "width": 120,
-      "height": 30
-    },
-    {
-      "id": "chapel",
-      "kind": "chapel",
-      "label": "Chapel",
-      "x": 430,
-      "y": 80,
-      "width": 140,
-      "height": 90
+      "x": 560,
+      "y": 952,
+      "width": 110,
+      "height": 28
     },
     {
       "id": "office",
       "kind": "office",
       "label": "Office",
-      "x": 850,
-      "y": 650,
+      "x": 720,
+      "y": 862,
       "width": 100,
-      "height": 70
+      "height": 64
+    },
+    {
+      "id": "parking",
+      "kind": "parking",
+      "label": "Parking",
+      "x": 330,
+      "y": 850,
+      "width": 190,
+      "height": 96
+    },
+    {
+      "id": "chapel",
+      "kind": "chapel",
+      "label": "Chapel",
+      "x": 610,
+      "y": 70,
+      "width": 150,
+      "height": 104
     }
   ],
   "paths": [
     {
-      "id": "gate-to-chapel",
-      "kind": "footpath",
-      "width": 12,
+      "id": "main-avenue",
+      "kind": "road",
+      "width": 46,
       "points": [
         [
-          500,
-          765
+          615,
+          1000
         ],
         [
-          500,
-          450
+          615,
+          820
         ],
         [
-          500,
-          170
+          628,
+          640
+        ],
+        [
+          650,
+          460
+        ],
+        [
+          676,
+          300
+        ],
+        [
+          685,
+          200
         ]
       ]
     },
     {
-      "id": "central-to-office",
+      "id": "parking-spur",
+      "kind": "road",
+      "width": 36,
+      "points": [
+        [
+          615,
+          900
+        ],
+        [
+          520,
+          900
+        ]
+      ]
+    },
+    {
+      "id": "west-walk",
+      "kind": "footpath",
+      "width": 14,
+      "points": [
+        [
+          648,
+          470
+        ],
+        [
+          480,
+          468
+        ],
+        [
+          150,
+          462
+        ],
+        [
+          120,
+          440
+        ],
+        [
+          118,
+          180
+        ],
+        [
+          150,
+          140
+        ],
+        [
+          610,
+          130
+        ]
+      ]
+    },
+    {
+      "id": "east-walk",
+      "kind": "footpath",
+      "width": 14,
+      "points": [
+        [
+          652,
+          470
+        ],
+        [
+          780,
+          480
+        ],
+        [
+          1180,
+          490
+        ],
+        [
+          1240,
+          470
+        ],
+        [
+          1250,
+          170
+        ],
+        [
+          1220,
+          135
+        ],
+        [
+          760,
+          125
+        ]
+      ]
+    },
+    {
+      "id": "meadow-walk",
       "kind": "footpath",
       "width": 12,
       "points": [
         [
-          500,
-          450
+          630,
+          700
         ],
         [
-          850,
-          450
+          780,
+          718
         ],
         [
-          850,
-          650
+          1130,
+          720
+        ]
+      ]
+    },
+    {
+      "id": "south-walk",
+      "kind": "footpath",
+      "width": 12,
+      "points": [
+        [
+          630,
+          740
+        ],
+        [
+          470,
+          760
+        ],
+        [
+          160,
+          760
         ]
       ]
     }
@@ -78,384 +1029,2100 @@
     {
       "id": "A",
       "name": "Garden of Peace",
-      "x": 80,
-      "y": 200,
-      "rows": 4,
-      "cols": 3,
-      "plotSize": 40,
-      "gap": 8,
+      "x": 190,
+      "y": 175,
+      "rotation": 0,
+      "rows": 7,
+      "cols": 13,
+      "plotSize": 14,
+      "plotLength": 26,
+      "gap": 6,
       "plots": [
         {
           "id": "A-1",
           "row": 1,
           "col": 1,
-          "status": "available",
-          "basePrice": 800
+          "status": "occupied",
+          "basePrice": 1550
         },
         {
           "id": "A-2",
           "row": 1,
           "col": 2,
-          "status": "available",
-          "basePrice": 800
+          "status": "occupied",
+          "basePrice": 1550
         },
         {
           "id": "A-3",
           "row": 1,
           "col": 3,
-          "status": "available",
-          "basePrice": 800
+          "status": "occupied",
+          "basePrice": 1550
         },
         {
           "id": "A-4",
-          "row": 2,
-          "col": 1,
-          "status": "reserved",
-          "basePrice": 800
+          "row": 1,
+          "col": 4,
+          "status": "occupied",
+          "basePrice": 1550
         },
         {
           "id": "A-5",
-          "row": 2,
-          "col": 2,
-          "status": "available",
-          "basePrice": 800
+          "row": 1,
+          "col": 5,
+          "status": "occupied",
+          "basePrice": 1550
         },
         {
           "id": "A-6",
-          "row": 2,
-          "col": 3,
+          "row": 1,
+          "col": 6,
           "status": "occupied",
-          "basePrice": 800
+          "basePrice": 1550
         },
         {
           "id": "A-7",
-          "row": 3,
-          "col": 1,
-          "status": "available",
-          "basePrice": 800
+          "row": 1,
+          "col": 7,
+          "status": "occupied",
+          "basePrice": 1550
         },
         {
           "id": "A-8",
-          "row": 3,
-          "col": 2,
-          "status": "available",
-          "basePrice": 800
+          "row": 1,
+          "col": 8,
+          "status": "occupied",
+          "basePrice": 1550
         },
         {
           "id": "A-9",
-          "row": 3,
-          "col": 3,
-          "status": "reserved",
-          "basePrice": 800
+          "row": 1,
+          "col": 9,
+          "status": "occupied",
+          "basePrice": 1550
         },
         {
           "id": "A-10",
-          "row": 4,
-          "col": 1,
-          "status": "available",
-          "basePrice": 800
+          "row": 1,
+          "col": 10,
+          "status": "occupied",
+          "basePrice": 1550
         },
         {
           "id": "A-11",
-          "row": 4,
-          "col": 2,
-          "status": "available",
-          "basePrice": 800
+          "row": 1,
+          "col": 11,
+          "status": "occupied",
+          "basePrice": 1550
         },
         {
           "id": "A-12",
-          "row": 4,
+          "row": 1,
+          "col": 12,
+          "status": "occupied",
+          "basePrice": 1550
+        },
+        {
+          "id": "A-13",
+          "row": 1,
+          "col": 13,
+          "status": "occupied",
+          "basePrice": 1550
+        },
+        {
+          "id": "A-14",
+          "row": 2,
+          "col": 1,
+          "status": "occupied",
+          "basePrice": 1550
+        },
+        {
+          "id": "A-15",
+          "row": 2,
+          "col": 2,
+          "status": "occupied",
+          "basePrice": 1550
+        },
+        {
+          "id": "A-16",
+          "row": 2,
           "col": 3,
           "status": "occupied",
-          "basePrice": 800
+          "basePrice": 1550
+        },
+        {
+          "id": "A-17",
+          "row": 2,
+          "col": 4,
+          "status": "occupied",
+          "basePrice": 1550
+        },
+        {
+          "id": "A-18",
+          "row": 2,
+          "col": 5,
+          "status": "occupied",
+          "basePrice": 1550
+        },
+        {
+          "id": "A-19",
+          "row": 2,
+          "col": 6,
+          "status": "occupied",
+          "basePrice": 1550
+        },
+        {
+          "id": "A-20",
+          "row": 2,
+          "col": 7,
+          "status": "occupied",
+          "basePrice": 1550
+        },
+        {
+          "id": "A-21",
+          "row": 2,
+          "col": 8,
+          "status": "occupied",
+          "basePrice": 1550
+        },
+        {
+          "id": "A-22",
+          "row": 2,
+          "col": 9,
+          "status": "occupied",
+          "basePrice": 1550
+        },
+        {
+          "id": "A-23",
+          "row": 2,
+          "col": 10,
+          "status": "occupied",
+          "basePrice": 1550
+        },
+        {
+          "id": "A-24",
+          "row": 2,
+          "col": 11,
+          "status": "occupied",
+          "basePrice": 1550
+        },
+        {
+          "id": "A-25",
+          "row": 2,
+          "col": 12,
+          "status": "occupied",
+          "basePrice": 1550
+        },
+        {
+          "id": "A-26",
+          "row": 2,
+          "col": 13,
+          "status": "occupied",
+          "basePrice": 1550
+        },
+        {
+          "id": "A-27",
+          "row": 3,
+          "col": 1,
+          "status": "occupied",
+          "basePrice": 1500
+        },
+        {
+          "id": "A-28",
+          "row": 3,
+          "col": 2,
+          "status": "occupied",
+          "basePrice": 1500
+        },
+        {
+          "id": "A-29",
+          "row": 3,
+          "col": 3,
+          "status": "occupied",
+          "basePrice": 1500
+        },
+        {
+          "id": "A-30",
+          "row": 3,
+          "col": 4,
+          "status": "occupied",
+          "basePrice": 1500
+        },
+        {
+          "id": "A-31",
+          "row": 3,
+          "col": 5,
+          "status": "occupied",
+          "basePrice": 1500
+        },
+        {
+          "id": "A-32",
+          "row": 3,
+          "col": 6,
+          "status": "occupied",
+          "basePrice": 1500
+        },
+        {
+          "id": "A-33",
+          "row": 3,
+          "col": 7,
+          "status": "occupied",
+          "basePrice": 1500
+        },
+        {
+          "id": "A-34",
+          "row": 3,
+          "col": 8,
+          "status": "occupied",
+          "basePrice": 1500
+        },
+        {
+          "id": "A-35",
+          "row": 3,
+          "col": 9,
+          "status": "occupied",
+          "basePrice": 1500
+        },
+        {
+          "id": "A-36",
+          "row": 3,
+          "col": 10,
+          "status": "occupied",
+          "basePrice": 1500
+        },
+        {
+          "id": "A-37",
+          "row": 3,
+          "col": 11,
+          "status": "occupied",
+          "basePrice": 1500
+        },
+        {
+          "id": "A-38",
+          "row": 3,
+          "col": 12,
+          "status": "occupied",
+          "basePrice": 1500
+        },
+        {
+          "id": "A-39",
+          "row": 3,
+          "col": 13,
+          "status": "occupied",
+          "basePrice": 1500
+        },
+        {
+          "id": "A-40",
+          "row": 4,
+          "col": 1,
+          "status": "occupied",
+          "basePrice": 1500
+        },
+        {
+          "id": "A-41",
+          "row": 4,
+          "col": 2,
+          "status": "available",
+          "basePrice": 1500
+        },
+        {
+          "id": "A-42",
+          "row": 4,
+          "col": 3,
+          "status": "available",
+          "basePrice": 1500
+        },
+        {
+          "id": "A-43",
+          "row": 4,
+          "col": 4,
+          "status": "occupied",
+          "basePrice": 1500
+        },
+        {
+          "id": "A-44",
+          "row": 4,
+          "col": 5,
+          "status": "occupied",
+          "basePrice": 1500
+        },
+        {
+          "id": "A-45",
+          "row": 4,
+          "col": 6,
+          "status": "occupied",
+          "basePrice": 1500
+        },
+        {
+          "id": "A-46",
+          "row": 4,
+          "col": 7,
+          "status": "occupied",
+          "basePrice": 1500
+        },
+        {
+          "id": "A-47",
+          "row": 4,
+          "col": 8,
+          "status": "available",
+          "basePrice": 1500
+        },
+        {
+          "id": "A-48",
+          "row": 4,
+          "col": 9,
+          "status": "occupied",
+          "basePrice": 1500
+        },
+        {
+          "id": "A-49",
+          "row": 4,
+          "col": 10,
+          "status": "occupied",
+          "basePrice": 1500
+        },
+        {
+          "id": "A-50",
+          "row": 4,
+          "col": 11,
+          "status": "occupied",
+          "basePrice": 1500
+        },
+        {
+          "id": "A-51",
+          "row": 4,
+          "col": 12,
+          "status": "occupied",
+          "basePrice": 1500
+        },
+        {
+          "id": "A-52",
+          "row": 4,
+          "col": 13,
+          "status": "available",
+          "basePrice": 1500
+        },
+        {
+          "id": "A-53",
+          "row": 5,
+          "col": 1,
+          "status": "available",
+          "basePrice": 1450
+        },
+        {
+          "id": "A-54",
+          "row": 5,
+          "col": 2,
+          "status": "reserved",
+          "basePrice": 1450
+        },
+        {
+          "id": "A-55",
+          "row": 5,
+          "col": 3,
+          "status": "reserved",
+          "basePrice": 1450
+        },
+        {
+          "id": "A-56",
+          "row": 5,
+          "col": 4,
+          "status": "available",
+          "basePrice": 1450
+        },
+        {
+          "id": "A-57",
+          "row": 5,
+          "col": 5,
+          "status": "available",
+          "basePrice": 1450
+        },
+        {
+          "id": "A-58",
+          "row": 5,
+          "col": 6,
+          "status": "available",
+          "basePrice": 1450
+        },
+        {
+          "id": "A-59",
+          "row": 5,
+          "col": 7,
+          "status": "available",
+          "basePrice": 1450
+        },
+        {
+          "id": "A-60",
+          "row": 5,
+          "col": 8,
+          "status": "available",
+          "basePrice": 1450
+        },
+        {
+          "id": "A-61",
+          "row": 5,
+          "col": 9,
+          "status": "occupied",
+          "basePrice": 1450
+        },
+        {
+          "id": "A-62",
+          "row": 5,
+          "col": 10,
+          "status": "reserved",
+          "basePrice": 1450
+        },
+        {
+          "id": "A-63",
+          "row": 5,
+          "col": 11,
+          "status": "occupied",
+          "basePrice": 1450
+        },
+        {
+          "id": "A-64",
+          "row": 5,
+          "col": 12,
+          "status": "available",
+          "basePrice": 1450
+        },
+        {
+          "id": "A-65",
+          "row": 5,
+          "col": 13,
+          "status": "available",
+          "basePrice": 1450
+        },
+        {
+          "id": "A-66",
+          "row": 6,
+          "col": 1,
+          "status": "reserved",
+          "basePrice": 1450
+        },
+        {
+          "id": "A-67",
+          "row": 6,
+          "col": 2,
+          "status": "reserved",
+          "basePrice": 1450
+        },
+        {
+          "id": "A-68",
+          "row": 6,
+          "col": 3,
+          "status": "available",
+          "basePrice": 1450
+        },
+        {
+          "id": "A-69",
+          "row": 6,
+          "col": 4,
+          "status": "available",
+          "basePrice": 1450
+        },
+        {
+          "id": "A-70",
+          "row": 6,
+          "col": 5,
+          "status": "reserved",
+          "basePrice": 1450
+        },
+        {
+          "id": "A-71",
+          "row": 6,
+          "col": 6,
+          "status": "available",
+          "basePrice": 1450
+        },
+        {
+          "id": "A-72",
+          "row": 6,
+          "col": 7,
+          "status": "available",
+          "basePrice": 1450
+        },
+        {
+          "id": "A-73",
+          "row": 6,
+          "col": 8,
+          "status": "available",
+          "basePrice": 1450
+        },
+        {
+          "id": "A-74",
+          "row": 6,
+          "col": 9,
+          "status": "available",
+          "basePrice": 1450
+        },
+        {
+          "id": "A-75",
+          "row": 6,
+          "col": 10,
+          "status": "available",
+          "basePrice": 1450
+        },
+        {
+          "id": "A-76",
+          "row": 6,
+          "col": 11,
+          "status": "available",
+          "basePrice": 1450
+        },
+        {
+          "id": "A-77",
+          "row": 6,
+          "col": 12,
+          "status": "reserved",
+          "basePrice": 1450
+        },
+        {
+          "id": "A-78",
+          "row": 6,
+          "col": 13,
+          "status": "reserved",
+          "basePrice": 1450
+        },
+        {
+          "id": "A-79",
+          "row": 7,
+          "col": 1,
+          "status": "available",
+          "basePrice": 1400
+        },
+        {
+          "id": "A-80",
+          "row": 7,
+          "col": 2,
+          "status": "available",
+          "basePrice": 1400
+        },
+        {
+          "id": "A-81",
+          "row": 7,
+          "col": 3,
+          "status": "available",
+          "basePrice": 1400
+        },
+        {
+          "id": "A-82",
+          "row": 7,
+          "col": 4,
+          "status": "available",
+          "basePrice": 1400
+        },
+        {
+          "id": "A-83",
+          "row": 7,
+          "col": 5,
+          "status": "available",
+          "basePrice": 1400
+        },
+        {
+          "id": "A-84",
+          "row": 7,
+          "col": 6,
+          "status": "available",
+          "basePrice": 1400
+        },
+        {
+          "id": "A-85",
+          "row": 7,
+          "col": 7,
+          "status": "available",
+          "basePrice": 1400
+        },
+        {
+          "id": "A-86",
+          "row": 7,
+          "col": 8,
+          "status": "available",
+          "basePrice": 1400
+        },
+        {
+          "id": "A-87",
+          "row": 7,
+          "col": 9,
+          "status": "reserved",
+          "basePrice": 1400
+        },
+        {
+          "id": "A-88",
+          "row": 7,
+          "col": 10,
+          "status": "available",
+          "basePrice": 1400
+        },
+        {
+          "id": "A-89",
+          "row": 7,
+          "col": 11,
+          "status": "available",
+          "basePrice": 1400
+        },
+        {
+          "id": "A-90",
+          "row": 7,
+          "col": 12,
+          "status": "available",
+          "basePrice": 1400
+        },
+        {
+          "id": "A-91",
+          "row": 7,
+          "col": 13,
+          "status": "available",
+          "basePrice": 1400
         }
       ]
     },
     {
       "id": "B",
-      "name": "Garden of Serenity",
-      "x": 280,
-      "y": 200,
-      "rows": 4,
-      "cols": 3,
-      "plotSize": 40,
-      "gap": 8,
+      "name": "Cedar Walk",
+      "x": 170,
+      "y": 505,
+      "rotation": -5,
+      "rows": 6,
+      "cols": 11,
+      "plotSize": 14,
+      "plotLength": 26,
+      "gap": 6,
       "plots": [
         {
           "id": "B-1",
           "row": 1,
           "col": 1,
-          "status": "available",
-          "basePrice": 950
+          "status": "occupied",
+          "basePrice": 1300
         },
         {
           "id": "B-2",
           "row": 1,
           "col": 2,
-          "status": "available",
-          "basePrice": 950
+          "status": "occupied",
+          "basePrice": 1300
         },
         {
           "id": "B-3",
           "row": 1,
           "col": 3,
-          "status": "reserved",
-          "basePrice": 950
+          "status": "occupied",
+          "basePrice": 1300
         },
         {
           "id": "B-4",
-          "row": 2,
-          "col": 1,
-          "status": "available",
-          "basePrice": 950
+          "row": 1,
+          "col": 4,
+          "status": "occupied",
+          "basePrice": 1300
         },
         {
           "id": "B-5",
-          "row": 2,
-          "col": 2,
+          "row": 1,
+          "col": 5,
           "status": "occupied",
-          "basePrice": 950
+          "basePrice": 1300
         },
         {
           "id": "B-6",
-          "row": 2,
-          "col": 3,
-          "status": "available",
-          "basePrice": 950
+          "row": 1,
+          "col": 6,
+          "status": "occupied",
+          "basePrice": 1300
         },
         {
           "id": "B-7",
-          "row": 3,
-          "col": 1,
-          "status": "available",
-          "basePrice": 950
+          "row": 1,
+          "col": 7,
+          "status": "occupied",
+          "basePrice": 1300
         },
         {
           "id": "B-8",
-          "row": 3,
-          "col": 2,
+          "row": 1,
+          "col": 8,
           "status": "occupied",
-          "basePrice": 950
+          "basePrice": 1300
         },
         {
           "id": "B-9",
-          "row": 3,
-          "col": 3,
-          "status": "available",
-          "basePrice": 950
+          "row": 1,
+          "col": 9,
+          "status": "occupied",
+          "basePrice": 1300
         },
         {
           "id": "B-10",
-          "row": 4,
-          "col": 1,
-          "status": "reserved",
-          "basePrice": 950
+          "row": 1,
+          "col": 10,
+          "status": "occupied",
+          "basePrice": 1300
         },
         {
           "id": "B-11",
-          "row": 4,
-          "col": 2,
+          "row": 1,
+          "col": 11,
           "status": "occupied",
-          "basePrice": 950
+          "basePrice": 1300
         },
         {
           "id": "B-12",
-          "row": 4,
+          "row": 2,
+          "col": 1,
+          "status": "occupied",
+          "basePrice": 1250
+        },
+        {
+          "id": "B-13",
+          "row": 2,
+          "col": 2,
+          "status": "occupied",
+          "basePrice": 1250
+        },
+        {
+          "id": "B-14",
+          "row": 2,
+          "col": 3,
+          "status": "occupied",
+          "basePrice": 1250
+        },
+        {
+          "id": "B-15",
+          "row": 2,
+          "col": 4,
+          "status": "available",
+          "basePrice": 1250
+        },
+        {
+          "id": "B-16",
+          "row": 2,
+          "col": 5,
+          "status": "occupied",
+          "basePrice": 1250
+        },
+        {
+          "id": "B-17",
+          "row": 2,
+          "col": 6,
+          "status": "occupied",
+          "basePrice": 1250
+        },
+        {
+          "id": "B-18",
+          "row": 2,
+          "col": 7,
+          "status": "available",
+          "basePrice": 1250
+        },
+        {
+          "id": "B-19",
+          "row": 2,
+          "col": 8,
+          "status": "available",
+          "basePrice": 1250
+        },
+        {
+          "id": "B-20",
+          "row": 2,
+          "col": 9,
+          "status": "occupied",
+          "basePrice": 1250
+        },
+        {
+          "id": "B-21",
+          "row": 2,
+          "col": 10,
+          "status": "available",
+          "basePrice": 1250
+        },
+        {
+          "id": "B-22",
+          "row": 2,
+          "col": 11,
+          "status": "occupied",
+          "basePrice": 1250
+        },
+        {
+          "id": "B-23",
+          "row": 3,
+          "col": 1,
+          "status": "reserved",
+          "basePrice": 1250
+        },
+        {
+          "id": "B-24",
+          "row": 3,
+          "col": 2,
+          "status": "occupied",
+          "basePrice": 1250
+        },
+        {
+          "id": "B-25",
+          "row": 3,
           "col": 3,
           "status": "available",
-          "basePrice": 950
+          "basePrice": 1250
+        },
+        {
+          "id": "B-26",
+          "row": 3,
+          "col": 4,
+          "status": "reserved",
+          "basePrice": 1250
+        },
+        {
+          "id": "B-27",
+          "row": 3,
+          "col": 5,
+          "status": "reserved",
+          "basePrice": 1250
+        },
+        {
+          "id": "B-28",
+          "row": 3,
+          "col": 6,
+          "status": "available",
+          "basePrice": 1250
+        },
+        {
+          "id": "B-29",
+          "row": 3,
+          "col": 7,
+          "status": "available",
+          "basePrice": 1250
+        },
+        {
+          "id": "B-30",
+          "row": 3,
+          "col": 8,
+          "status": "available",
+          "basePrice": 1250
+        },
+        {
+          "id": "B-31",
+          "row": 3,
+          "col": 9,
+          "status": "available",
+          "basePrice": 1250
+        },
+        {
+          "id": "B-32",
+          "row": 3,
+          "col": 10,
+          "status": "occupied",
+          "basePrice": 1250
+        },
+        {
+          "id": "B-33",
+          "row": 3,
+          "col": 11,
+          "status": "reserved",
+          "basePrice": 1250
+        },
+        {
+          "id": "B-34",
+          "row": 4,
+          "col": 1,
+          "status": "available",
+          "basePrice": 1200
+        },
+        {
+          "id": "B-35",
+          "row": 4,
+          "col": 2,
+          "status": "available",
+          "basePrice": 1200
+        },
+        {
+          "id": "B-36",
+          "row": 4,
+          "col": 3,
+          "status": "reserved",
+          "basePrice": 1200
+        },
+        {
+          "id": "B-37",
+          "row": 4,
+          "col": 4,
+          "status": "reserved",
+          "basePrice": 1200
+        },
+        {
+          "id": "B-38",
+          "row": 4,
+          "col": 5,
+          "status": "reserved",
+          "basePrice": 1200
+        },
+        {
+          "id": "B-39",
+          "row": 4,
+          "col": 6,
+          "status": "reserved",
+          "basePrice": 1200
+        },
+        {
+          "id": "B-40",
+          "row": 4,
+          "col": 7,
+          "status": "available",
+          "basePrice": 1200
+        },
+        {
+          "id": "B-41",
+          "row": 4,
+          "col": 8,
+          "status": "available",
+          "basePrice": 1200
+        },
+        {
+          "id": "B-42",
+          "row": 4,
+          "col": 9,
+          "status": "available",
+          "basePrice": 1200
+        },
+        {
+          "id": "B-43",
+          "row": 4,
+          "col": 10,
+          "status": "reserved",
+          "basePrice": 1200
+        },
+        {
+          "id": "B-44",
+          "row": 4,
+          "col": 11,
+          "status": "available",
+          "basePrice": 1200
+        },
+        {
+          "id": "B-45",
+          "row": 5,
+          "col": 1,
+          "status": "available",
+          "basePrice": 1200
+        },
+        {
+          "id": "B-46",
+          "row": 5,
+          "col": 2,
+          "status": "available",
+          "basePrice": 1200
+        },
+        {
+          "id": "B-47",
+          "row": 5,
+          "col": 3,
+          "status": "available",
+          "basePrice": 1200
+        },
+        {
+          "id": "B-48",
+          "row": 5,
+          "col": 4,
+          "status": "available",
+          "basePrice": 1200
+        },
+        {
+          "id": "B-49",
+          "row": 5,
+          "col": 5,
+          "status": "available",
+          "basePrice": 1200
+        },
+        {
+          "id": "B-50",
+          "row": 5,
+          "col": 6,
+          "status": "available",
+          "basePrice": 1200
+        },
+        {
+          "id": "B-51",
+          "row": 5,
+          "col": 7,
+          "status": "available",
+          "basePrice": 1200
+        },
+        {
+          "id": "B-52",
+          "row": 5,
+          "col": 8,
+          "status": "available",
+          "basePrice": 1200
+        },
+        {
+          "id": "B-53",
+          "row": 5,
+          "col": 9,
+          "status": "available",
+          "basePrice": 1200
+        },
+        {
+          "id": "B-54",
+          "row": 5,
+          "col": 10,
+          "status": "available",
+          "basePrice": 1200
+        },
+        {
+          "id": "B-55",
+          "row": 5,
+          "col": 11,
+          "status": "reserved",
+          "basePrice": 1200
+        },
+        {
+          "id": "B-56",
+          "row": 6,
+          "col": 1,
+          "status": "available",
+          "basePrice": 1150
+        },
+        {
+          "id": "B-57",
+          "row": 6,
+          "col": 2,
+          "status": "available",
+          "basePrice": 1150
+        },
+        {
+          "id": "B-58",
+          "row": 6,
+          "col": 3,
+          "status": "available",
+          "basePrice": 1150
+        },
+        {
+          "id": "B-59",
+          "row": 6,
+          "col": 4,
+          "status": "available",
+          "basePrice": 1150
+        },
+        {
+          "id": "B-60",
+          "row": 6,
+          "col": 5,
+          "status": "available",
+          "basePrice": 1150
+        },
+        {
+          "id": "B-61",
+          "row": 6,
+          "col": 6,
+          "status": "available",
+          "basePrice": 1150
+        },
+        {
+          "id": "B-62",
+          "row": 6,
+          "col": 7,
+          "status": "available",
+          "basePrice": 1150
+        },
+        {
+          "id": "B-63",
+          "row": 6,
+          "col": 8,
+          "status": "available",
+          "basePrice": 1150
+        },
+        {
+          "id": "B-64",
+          "row": 6,
+          "col": 9,
+          "status": "available",
+          "basePrice": 1150
+        },
+        {
+          "id": "B-65",
+          "row": 6,
+          "col": 10,
+          "status": "available",
+          "basePrice": 1150
+        },
+        {
+          "id": "B-66",
+          "row": 6,
+          "col": 11,
+          "status": "available",
+          "basePrice": 1150
         }
       ]
     },
     {
       "id": "C",
-      "name": "Garden of Remembrance",
-      "x": 560,
-      "y": 200,
-      "rows": 4,
-      "cols": 3,
-      "plotSize": 40,
-      "gap": 8,
+      "name": "Willow Rise",
+      "x": 830,
+      "y": 170,
+      "rotation": 4,
+      "rows": 6,
+      "cols": 10,
+      "plotSize": 14,
+      "plotLength": 26,
+      "gap": 6,
       "plots": [
         {
           "id": "C-1",
           "row": 1,
           "col": 1,
           "status": "available",
-          "basePrice": 1150
+          "basePrice": 1400
         },
         {
           "id": "C-2",
           "row": 1,
           "col": 2,
-          "status": "reserved",
-          "basePrice": 1150
+          "status": "occupied",
+          "basePrice": 1400
         },
         {
           "id": "C-3",
           "row": 1,
           "col": 3,
-          "status": "available",
-          "basePrice": 1150
+          "status": "reserved",
+          "basePrice": 1400
         },
         {
           "id": "C-4",
-          "row": 2,
-          "col": 1,
+          "row": 1,
+          "col": 4,
           "status": "occupied",
-          "basePrice": 1150
+          "basePrice": 1400
         },
         {
           "id": "C-5",
-          "row": 2,
-          "col": 2,
-          "status": "available",
-          "basePrice": 1150
+          "row": 1,
+          "col": 5,
+          "status": "occupied",
+          "basePrice": 1400
         },
         {
           "id": "C-6",
-          "row": 2,
-          "col": 3,
-          "status": "available",
-          "basePrice": 1150
+          "row": 1,
+          "col": 6,
+          "status": "reserved",
+          "basePrice": 1400
         },
         {
           "id": "C-7",
-          "row": 3,
-          "col": 1,
-          "status": "reserved",
-          "basePrice": 1150
+          "row": 1,
+          "col": 7,
+          "status": "occupied",
+          "basePrice": 1400
         },
         {
           "id": "C-8",
-          "row": 3,
-          "col": 2,
-          "status": "available",
-          "basePrice": 1150
+          "row": 1,
+          "col": 8,
+          "status": "reserved",
+          "basePrice": 1400
         },
         {
           "id": "C-9",
-          "row": 3,
-          "col": 3,
-          "status": "occupied",
-          "basePrice": 1150
+          "row": 1,
+          "col": 9,
+          "status": "available",
+          "basePrice": 1400
         },
         {
           "id": "C-10",
-          "row": 4,
-          "col": 1,
-          "status": "available",
-          "basePrice": 1150
+          "row": 1,
+          "col": 10,
+          "status": "occupied",
+          "basePrice": 1400
         },
         {
           "id": "C-11",
-          "row": 4,
-          "col": 2,
+          "row": 2,
+          "col": 1,
           "status": "available",
-          "basePrice": 1150
+          "basePrice": 1350
         },
         {
           "id": "C-12",
+          "row": 2,
+          "col": 2,
+          "status": "reserved",
+          "basePrice": 1350
+        },
+        {
+          "id": "C-13",
+          "row": 2,
+          "col": 3,
+          "status": "available",
+          "basePrice": 1350
+        },
+        {
+          "id": "C-14",
+          "row": 2,
+          "col": 4,
+          "status": "available",
+          "basePrice": 1350
+        },
+        {
+          "id": "C-15",
+          "row": 2,
+          "col": 5,
+          "status": "occupied",
+          "basePrice": 1350
+        },
+        {
+          "id": "C-16",
+          "row": 2,
+          "col": 6,
+          "status": "available",
+          "basePrice": 1350
+        },
+        {
+          "id": "C-17",
+          "row": 2,
+          "col": 7,
+          "status": "reserved",
+          "basePrice": 1350
+        },
+        {
+          "id": "C-18",
+          "row": 2,
+          "col": 8,
+          "status": "reserved",
+          "basePrice": 1350
+        },
+        {
+          "id": "C-19",
+          "row": 2,
+          "col": 9,
+          "status": "reserved",
+          "basePrice": 1350
+        },
+        {
+          "id": "C-20",
+          "row": 2,
+          "col": 10,
+          "status": "reserved",
+          "basePrice": 1350
+        },
+        {
+          "id": "C-21",
+          "row": 3,
+          "col": 1,
+          "status": "available",
+          "basePrice": 1350
+        },
+        {
+          "id": "C-22",
+          "row": 3,
+          "col": 2,
+          "status": "available",
+          "basePrice": 1350
+        },
+        {
+          "id": "C-23",
+          "row": 3,
+          "col": 3,
+          "status": "available",
+          "basePrice": 1350
+        },
+        {
+          "id": "C-24",
+          "row": 3,
+          "col": 4,
+          "status": "available",
+          "basePrice": 1350
+        },
+        {
+          "id": "C-25",
+          "row": 3,
+          "col": 5,
+          "status": "available",
+          "basePrice": 1350
+        },
+        {
+          "id": "C-26",
+          "row": 3,
+          "col": 6,
+          "status": "available",
+          "basePrice": 1350
+        },
+        {
+          "id": "C-27",
+          "row": 3,
+          "col": 7,
+          "status": "available",
+          "basePrice": 1350
+        },
+        {
+          "id": "C-28",
+          "row": 3,
+          "col": 8,
+          "status": "available",
+          "basePrice": 1350
+        },
+        {
+          "id": "C-29",
+          "row": 3,
+          "col": 9,
+          "status": "reserved",
+          "basePrice": 1350
+        },
+        {
+          "id": "C-30",
+          "row": 3,
+          "col": 10,
+          "status": "available",
+          "basePrice": 1350
+        },
+        {
+          "id": "C-31",
+          "row": 4,
+          "col": 1,
+          "status": "reserved",
+          "basePrice": 1300
+        },
+        {
+          "id": "C-32",
+          "row": 4,
+          "col": 2,
+          "status": "available",
+          "basePrice": 1300
+        },
+        {
+          "id": "C-33",
           "row": 4,
           "col": 3,
-          "status": "occupied",
-          "basePrice": 1150
+          "status": "available",
+          "basePrice": 1300
+        },
+        {
+          "id": "C-34",
+          "row": 4,
+          "col": 4,
+          "status": "available",
+          "basePrice": 1300
+        },
+        {
+          "id": "C-35",
+          "row": 4,
+          "col": 5,
+          "status": "reserved",
+          "basePrice": 1300
+        },
+        {
+          "id": "C-36",
+          "row": 4,
+          "col": 6,
+          "status": "available",
+          "basePrice": 1300
+        },
+        {
+          "id": "C-37",
+          "row": 4,
+          "col": 7,
+          "status": "available",
+          "basePrice": 1300
+        },
+        {
+          "id": "C-38",
+          "row": 4,
+          "col": 8,
+          "status": "available",
+          "basePrice": 1300
+        },
+        {
+          "id": "C-39",
+          "row": 4,
+          "col": 9,
+          "status": "reserved",
+          "basePrice": 1300
+        },
+        {
+          "id": "C-40",
+          "row": 4,
+          "col": 10,
+          "status": "available",
+          "basePrice": 1300
+        },
+        {
+          "id": "C-41",
+          "row": 5,
+          "col": 1,
+          "status": "available",
+          "basePrice": 1300
+        },
+        {
+          "id": "C-42",
+          "row": 5,
+          "col": 2,
+          "status": "available",
+          "basePrice": 1300
+        },
+        {
+          "id": "C-43",
+          "row": 5,
+          "col": 3,
+          "status": "available",
+          "basePrice": 1300
+        },
+        {
+          "id": "C-44",
+          "row": 5,
+          "col": 4,
+          "status": "available",
+          "basePrice": 1300
+        },
+        {
+          "id": "C-45",
+          "row": 5,
+          "col": 5,
+          "status": "available",
+          "basePrice": 1300
+        },
+        {
+          "id": "C-46",
+          "row": 5,
+          "col": 6,
+          "status": "available",
+          "basePrice": 1300
+        },
+        {
+          "id": "C-47",
+          "row": 5,
+          "col": 7,
+          "status": "available",
+          "basePrice": 1300
+        },
+        {
+          "id": "C-48",
+          "row": 5,
+          "col": 8,
+          "status": "available",
+          "basePrice": 1300
+        },
+        {
+          "id": "C-49",
+          "row": 5,
+          "col": 9,
+          "status": "available",
+          "basePrice": 1300
+        },
+        {
+          "id": "C-50",
+          "row": 5,
+          "col": 10,
+          "status": "available",
+          "basePrice": 1300
+        },
+        {
+          "id": "C-51",
+          "row": 6,
+          "col": 1,
+          "status": "available",
+          "basePrice": 1250
+        },
+        {
+          "id": "C-52",
+          "row": 6,
+          "col": 2,
+          "status": "available",
+          "basePrice": 1250
+        },
+        {
+          "id": "C-53",
+          "row": 6,
+          "col": 3,
+          "status": "available",
+          "basePrice": 1250
+        },
+        {
+          "id": "C-54",
+          "row": 6,
+          "col": 4,
+          "status": "available",
+          "basePrice": 1250
+        },
+        {
+          "id": "C-55",
+          "row": 6,
+          "col": 5,
+          "status": "available",
+          "basePrice": 1250
+        },
+        {
+          "id": "C-56",
+          "row": 6,
+          "col": 6,
+          "status": "available",
+          "basePrice": 1250
+        },
+        {
+          "id": "C-57",
+          "row": 6,
+          "col": 7,
+          "status": "available",
+          "basePrice": 1250
+        },
+        {
+          "id": "C-58",
+          "row": 6,
+          "col": 8,
+          "status": "available",
+          "basePrice": 1250
+        },
+        {
+          "id": "C-59",
+          "row": 6,
+          "col": 9,
+          "status": "available",
+          "basePrice": 1250
+        },
+        {
+          "id": "C-60",
+          "row": 6,
+          "col": 10,
+          "status": "available",
+          "basePrice": 1250
         }
       ]
     },
     {
       "id": "D",
-      "name": "Garden of Reflection",
-      "x": 760,
-      "y": 200,
-      "rows": 4,
-      "cols": 3,
-      "plotSize": 40,
-      "gap": 8,
+      "name": "Meadow View",
+      "x": 800,
+      "y": 540,
+      "rotation": 0,
+      "rows": 5,
+      "cols": 15,
+      "plotSize": 14,
+      "plotLength": 26,
+      "gap": 6,
       "plots": [
         {
           "id": "D-1",
           "row": 1,
           "col": 1,
-          "status": "available",
-          "basePrice": 1400
+          "status": "reserved",
+          "basePrice": 1050
         },
         {
           "id": "D-2",
           "row": 1,
           "col": 2,
-          "status": "occupied",
-          "basePrice": 1400
+          "status": "available",
+          "basePrice": 1050
         },
         {
           "id": "D-3",
           "row": 1,
           "col": 3,
           "status": "available",
-          "basePrice": 1400
+          "basePrice": 1050
         },
         {
           "id": "D-4",
-          "row": 2,
-          "col": 1,
+          "row": 1,
+          "col": 4,
           "status": "available",
-          "basePrice": 1400
+          "basePrice": 1050
         },
         {
           "id": "D-5",
-          "row": 2,
-          "col": 2,
+          "row": 1,
+          "col": 5,
           "status": "occupied",
-          "basePrice": 1400
+          "basePrice": 1050
         },
         {
           "id": "D-6",
-          "row": 2,
-          "col": 3,
+          "row": 1,
+          "col": 6,
           "status": "reserved",
-          "basePrice": 1400
+          "basePrice": 1050
         },
         {
           "id": "D-7",
-          "row": 3,
-          "col": 1,
+          "row": 1,
+          "col": 7,
           "status": "available",
-          "basePrice": 1400
+          "basePrice": 1050
         },
         {
           "id": "D-8",
-          "row": 3,
-          "col": 2,
+          "row": 1,
+          "col": 8,
           "status": "available",
-          "basePrice": 1400
+          "basePrice": 1050
         },
         {
           "id": "D-9",
-          "row": 3,
-          "col": 3,
-          "status": "occupied",
-          "basePrice": 1400
+          "row": 1,
+          "col": 9,
+          "status": "available",
+          "basePrice": 1050
         },
         {
           "id": "D-10",
-          "row": 4,
-          "col": 1,
-          "status": "available",
-          "basePrice": 1400
+          "row": 1,
+          "col": 10,
+          "status": "reserved",
+          "basePrice": 1050
         },
         {
           "id": "D-11",
-          "row": 4,
-          "col": 2,
-          "status": "occupied",
-          "basePrice": 1400
+          "row": 1,
+          "col": 11,
+          "status": "available",
+          "basePrice": 1050
         },
         {
           "id": "D-12",
+          "row": 1,
+          "col": 12,
+          "status": "available",
+          "basePrice": 1050
+        },
+        {
+          "id": "D-13",
+          "row": 1,
+          "col": 13,
+          "status": "reserved",
+          "basePrice": 1050
+        },
+        {
+          "id": "D-14",
+          "row": 1,
+          "col": 14,
+          "status": "occupied",
+          "basePrice": 1050
+        },
+        {
+          "id": "D-15",
+          "row": 1,
+          "col": 15,
+          "status": "reserved",
+          "basePrice": 1050
+        },
+        {
+          "id": "D-16",
+          "row": 2,
+          "col": 1,
+          "status": "reserved",
+          "basePrice": 1050
+        },
+        {
+          "id": "D-17",
+          "row": 2,
+          "col": 2,
+          "status": "available",
+          "basePrice": 1050
+        },
+        {
+          "id": "D-18",
+          "row": 2,
+          "col": 3,
+          "status": "available",
+          "basePrice": 1050
+        },
+        {
+          "id": "D-19",
+          "row": 2,
+          "col": 4,
+          "status": "available",
+          "basePrice": 1050
+        },
+        {
+          "id": "D-20",
+          "row": 2,
+          "col": 5,
+          "status": "available",
+          "basePrice": 1050
+        },
+        {
+          "id": "D-21",
+          "row": 2,
+          "col": 6,
+          "status": "reserved",
+          "basePrice": 1050
+        },
+        {
+          "id": "D-22",
+          "row": 2,
+          "col": 7,
+          "status": "available",
+          "basePrice": 1050
+        },
+        {
+          "id": "D-23",
+          "row": 2,
+          "col": 8,
+          "status": "available",
+          "basePrice": 1050
+        },
+        {
+          "id": "D-24",
+          "row": 2,
+          "col": 9,
+          "status": "available",
+          "basePrice": 1050
+        },
+        {
+          "id": "D-25",
+          "row": 2,
+          "col": 10,
+          "status": "available",
+          "basePrice": 1050
+        },
+        {
+          "id": "D-26",
+          "row": 2,
+          "col": 11,
+          "status": "available",
+          "basePrice": 1050
+        },
+        {
+          "id": "D-27",
+          "row": 2,
+          "col": 12,
+          "status": "available",
+          "basePrice": 1050
+        },
+        {
+          "id": "D-28",
+          "row": 2,
+          "col": 13,
+          "status": "available",
+          "basePrice": 1050
+        },
+        {
+          "id": "D-29",
+          "row": 2,
+          "col": 14,
+          "status": "available",
+          "basePrice": 1050
+        },
+        {
+          "id": "D-30",
+          "row": 2,
+          "col": 15,
+          "status": "available",
+          "basePrice": 1050
+        },
+        {
+          "id": "D-31",
+          "row": 3,
+          "col": 1,
+          "status": "available",
+          "basePrice": 1000
+        },
+        {
+          "id": "D-32",
+          "row": 3,
+          "col": 2,
+          "status": "available",
+          "basePrice": 1000
+        },
+        {
+          "id": "D-33",
+          "row": 3,
+          "col": 3,
+          "status": "available",
+          "basePrice": 1000
+        },
+        {
+          "id": "D-34",
+          "row": 3,
+          "col": 4,
+          "status": "available",
+          "basePrice": 1000
+        },
+        {
+          "id": "D-35",
+          "row": 3,
+          "col": 5,
+          "status": "reserved",
+          "basePrice": 1000
+        },
+        {
+          "id": "D-36",
+          "row": 3,
+          "col": 6,
+          "status": "available",
+          "basePrice": 1000
+        },
+        {
+          "id": "D-37",
+          "row": 3,
+          "col": 7,
+          "status": "available",
+          "basePrice": 1000
+        },
+        {
+          "id": "D-38",
+          "row": 3,
+          "col": 8,
+          "status": "available",
+          "basePrice": 1000
+        },
+        {
+          "id": "D-39",
+          "row": 3,
+          "col": 9,
+          "status": "reserved",
+          "basePrice": 1000
+        },
+        {
+          "id": "D-40",
+          "row": 3,
+          "col": 10,
+          "status": "available",
+          "basePrice": 1000
+        },
+        {
+          "id": "D-41",
+          "row": 3,
+          "col": 11,
+          "status": "available",
+          "basePrice": 1000
+        },
+        {
+          "id": "D-42",
+          "row": 3,
+          "col": 12,
+          "status": "available",
+          "basePrice": 1000
+        },
+        {
+          "id": "D-43",
+          "row": 3,
+          "col": 13,
+          "status": "available",
+          "basePrice": 1000
+        },
+        {
+          "id": "D-44",
+          "row": 3,
+          "col": 14,
+          "status": "available",
+          "basePrice": 1000
+        },
+        {
+          "id": "D-45",
+          "row": 3,
+          "col": 15,
+          "status": "available",
+          "basePrice": 1000
+        },
+        {
+          "id": "D-46",
+          "row": 4,
+          "col": 1,
+          "status": "available",
+          "basePrice": 1000
+        },
+        {
+          "id": "D-47",
+          "row": 4,
+          "col": 2,
+          "status": "available",
+          "basePrice": 1000
+        },
+        {
+          "id": "D-48",
           "row": 4,
           "col": 3,
           "status": "available",
-          "basePrice": 1400
+          "basePrice": 1000
+        },
+        {
+          "id": "D-49",
+          "row": 4,
+          "col": 4,
+          "status": "available",
+          "basePrice": 1000
+        },
+        {
+          "id": "D-50",
+          "row": 4,
+          "col": 5,
+          "status": "available",
+          "basePrice": 1000
+        },
+        {
+          "id": "D-51",
+          "row": 4,
+          "col": 6,
+          "status": "available",
+          "basePrice": 1000
+        },
+        {
+          "id": "D-52",
+          "row": 4,
+          "col": 7,
+          "status": "available",
+          "basePrice": 1000
+        },
+        {
+          "id": "D-53",
+          "row": 4,
+          "col": 8,
+          "status": "available",
+          "basePrice": 1000
+        },
+        {
+          "id": "D-54",
+          "row": 4,
+          "col": 9,
+          "status": "available",
+          "basePrice": 1000
+        },
+        {
+          "id": "D-55",
+          "row": 4,
+          "col": 10,
+          "status": "available",
+          "basePrice": 1000
+        },
+        {
+          "id": "D-56",
+          "row": 4,
+          "col": 11,
+          "status": "available",
+          "basePrice": 1000
+        },
+        {
+          "id": "D-57",
+          "row": 4,
+          "col": 12,
+          "status": "available",
+          "basePrice": 1000
+        },
+        {
+          "id": "D-58",
+          "row": 4,
+          "col": 13,
+          "status": "available",
+          "basePrice": 1000
+        },
+        {
+          "id": "D-59",
+          "row": 4,
+          "col": 14,
+          "status": "available",
+          "basePrice": 1000
+        },
+        {
+          "id": "D-60",
+          "row": 4,
+          "col": 15,
+          "status": "available",
+          "basePrice": 1000
+        },
+        {
+          "id": "D-61",
+          "row": 5,
+          "col": 1,
+          "status": "available",
+          "basePrice": 950
+        },
+        {
+          "id": "D-62",
+          "row": 5,
+          "col": 2,
+          "status": "available",
+          "basePrice": 950
+        },
+        {
+          "id": "D-63",
+          "row": 5,
+          "col": 3,
+          "status": "available",
+          "basePrice": 950
+        },
+        {
+          "id": "D-64",
+          "row": 5,
+          "col": 4,
+          "status": "available",
+          "basePrice": 950
+        },
+        {
+          "id": "D-65",
+          "row": 5,
+          "col": 5,
+          "status": "available",
+          "basePrice": 950
+        },
+        {
+          "id": "D-66",
+          "row": 5,
+          "col": 6,
+          "status": "available",
+          "basePrice": 950
+        },
+        {
+          "id": "D-67",
+          "row": 5,
+          "col": 7,
+          "status": "available",
+          "basePrice": 950
+        },
+        {
+          "id": "D-68",
+          "row": 5,
+          "col": 8,
+          "status": "available",
+          "basePrice": 950
+        },
+        {
+          "id": "D-69",
+          "row": 5,
+          "col": 9,
+          "status": "available",
+          "basePrice": 950
+        },
+        {
+          "id": "D-70",
+          "row": 5,
+          "col": 10,
+          "status": "available",
+          "basePrice": 950
+        },
+        {
+          "id": "D-71",
+          "row": 5,
+          "col": 11,
+          "status": "available",
+          "basePrice": 950
+        },
+        {
+          "id": "D-72",
+          "row": 5,
+          "col": 12,
+          "status": "available",
+          "basePrice": 950
+        },
+        {
+          "id": "D-73",
+          "row": 5,
+          "col": 13,
+          "status": "available",
+          "basePrice": 950
+        },
+        {
+          "id": "D-74",
+          "row": 5,
+          "col": 14,
+          "status": "available",
+          "basePrice": 950
+        },
+        {
+          "id": "D-75",
+          "row": 5,
+          "col": 15,
+          "status": "available",
+          "basePrice": 950
         }
       ]
     }
@@ -464,20 +3131,20 @@
     {
       "id": "single",
       "name": "Single plot",
-      "description": "One resting place.",
+      "description": "One burial space with a standard headstone foundation.",
       "priceMultiplier": 1
     },
     {
       "id": "companion",
       "name": "Companion plot",
-      "description": "Two resting places side by side, for partners or spouses.",
+      "description": "Two burial spaces side by side, reserved together.",
       "priceMultiplier": 1.8
     },
     {
-      "id": "family",
+      "id": "vault",
       "name": "Family vault",
-      "description": "A shared vault for multiple family members.",
-      "priceMultiplier": 3.2
+      "description": "A lined below-ground vault for up to four family members.",
+      "priceMultiplier": 4.5
     }
   ]
 }

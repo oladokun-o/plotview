@@ -1,5 +1,7 @@
 import type { PlotStatus } from "@/types/layout"
 
+export const PLOT_STATUSES: readonly PlotStatus[] = ["available", "reserved", "occupied"]
+
 export const PLOT_STATUS_LABEL: Record<PlotStatus, string> = {
   available: "Available",
   reserved: "Reserved",
@@ -12,5 +14,8 @@ export const STATUS_FILL_CLASS: Record<PlotStatus, string> = {
   occupied: "fill-occupied",
 }
 
-export const PLOT_RADIUS = 6
-export const SECTION_RADIUS = 14
+export const STATUS_STROKE_CLASS: Record<PlotStatus, string> = {
+  available: "stroke-available-edge",
+  reserved: "stroke-reserved-edge",
+  occupied: "stroke-occupied-edge",
+}

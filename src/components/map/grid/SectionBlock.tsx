@@ -1,47 +1,48 @@
-import { SECTION_RADIUS } from "../plotVisuals"
-import { GRID_PLOT_GAP, GRID_PLOT_SIZE, GRID_SECTION_HEADER_HEIGHT, GRID_SECTION_PADDING } from "./gridLayout"
-import { PlotRect } from "./PlotRect"
-import type { Section } from "@/types/layout"
+import type { SectionPlacement } from "../mapGeometry"
+import { PlotShape } from "../PlotShape"
+import { GRID_SECTION_PADDING } from "./gridLayout"
 
 interface SectionBlockProps {
-  section: Section
-  width: number
-  height: number
+  placement: SectionPlacement
   selectedPlotId: string | null
   availableOnly: boolean
   onSelectPlot: (plotId: string) => void
 }
 
-export function SectionBlock({ section, width, height, selectedPlotId, availableOnly, onSelectPlot }: SectionBlockProps) {
+export function SectionBlock({ placement, selectedPlotId, availableOnly, onSelectPlot }: SectionBlockProps) {
+  const { section, width, height, plots } = placement
+  const available = section.plots.filter((plot) => plot.status === "available").length
+
   return (
-    <g>
+    <g transform={`translate(${placement.x}, ${placement.y})`}>
       <rect
         width={width}
         height={height}
-        rx={SECTION_RADIUS}
+        rx={14}
         className="fill-raised stroke-line-subtle"
         strokeWidth={1}
+        vectorEffect="non-scaling-stroke"
       />
-      <text x={GRID_SECTION_PADDING} y={GRID_SECTION_PADDING + 12} className="fill-primary text-[11px] font-medium">
+      <text x={GRID_SECTION_PADDING} y={GRID_SECTION_PADDING + 12} className="fill-primary font-display text-[15px]">
         {section.name}
       </text>
-      {section.plots.map((plot) => {
-        const plotX = GRID_SECTION_PADDING + (plot.col - 1) * (GRID_PLOT_SIZE + GRID_PLOT_GAP)
-        const plotY =
-          GRID_SECTION_HEADER_HEIGHT + GRID_SECTION_PADDING + (plot.row - 1) * (GRID_PLOT_SIZE + GRID_PLOT_GAP)
-        return (
-          <PlotRect
-            key={plot.id}
-            plot={plot}
-            x={plotX}
-            y={plotY}
-            size={GRID_PLOT_SIZE}
-            isSelected={plot.id === selectedPlotId}
-            isDimmed={availableOnly && plot.status !== "available"}
-            onSelect={onSelectPlot}
-          />
-        )
-      })}
+      <text
+        x={width - GRID_SECTION_PADDING}
+        y={GRID_SECTION_PADDING + 12}
+        textAnchor="end"
+        className="fill-tertiary text-[11px] tabular-nums"
+      >
+        {`Section ${section.id} · ${available} available`}
+      </text>
+      {plots.map((plot) => (
+        <PlotShape
+          key={plot.plot.id}
+          placement={plot}
+          isSelected={plot.plot.id === selectedPlotId}
+          isDimmed={availableOnly && plot.plot.status !== "available"}
+          onSelect={onSelectPlot}
+        />
+      ))}
     </g>
   )
 }

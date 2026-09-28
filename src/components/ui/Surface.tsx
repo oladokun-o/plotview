@@ -1,9 +1,9 @@
-import type { HTMLAttributes } from "react"
+import type { ComponentProps } from "react"
 import { cn } from "@/lib/cn"
 
 export type SurfaceVariant = "floating" | "panel"
 
-interface SurfaceProps extends HTMLAttributes<HTMLDivElement> {
+interface SurfaceProps extends ComponentProps<"div"> {
   variant?: SurfaceVariant
 }
 

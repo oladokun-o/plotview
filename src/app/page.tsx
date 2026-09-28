@@ -1,6 +1,10 @@
 import { LayoutErrorScreen } from "@/components/LayoutErrorScreen";
-import { MapContainer } from "@/components/map/MapContainer";
+import { MapShell } from "@/components/map/MapShell";
+import branding from "@/data/branding.json";
 import { loadLayout } from "@/lib/layout";
+import type { Branding } from "@/types/branding";
+
+const siteBranding: Branding = branding;
 
 export default function Home() {
   const result = loadLayout();
@@ -9,5 +13,5 @@ export default function Home() {
     return <LayoutErrorScreen issue={result.issue} />;
   }
 
-  return <MapContainer layout={result.layout} />;
+  return <MapShell layout={result.layout} branding={siteBranding} />;
 }

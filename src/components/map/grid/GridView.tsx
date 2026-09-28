@@ -1,46 +1,26 @@
-"use client"
-
-import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch"
-import { computeGridLayout } from "./gridLayout"
+import type { MapGeometry } from "../mapGeometry"
 import { SectionBlock } from "./SectionBlock"
-import type { Section } from "@/types/layout"
 
 interface GridViewProps {
-  sections: Section[]
+  geometry: MapGeometry
   selectedPlotId: string | null
   availableOnly: boolean
   onSelectPlot: (plotId: string) => void
 }
 
-export function GridView({ sections, selectedPlotId, availableOnly, onSelectPlot }: GridViewProps) {
-  const layout = computeGridLayout(sections)
-
+/** Sections as labelled blocks, plots in rows and columns. Needs no spatial data. */
+export function GridView({ geometry, selectedPlotId, availableOnly, onSelectPlot }: GridViewProps) {
   return (
-    <TransformWrapper minScale={0.5} maxScale={4} fitOnInit centerOnInit doubleClick={{ disabled: true }}>
-      <TransformComponent
-        wrapperStyle={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
-        contentStyle={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
-      >
-        <svg
-          viewBox={`0 0 ${layout.width} ${layout.height}`}
-          className="h-full w-full"
-          role="group"
-          aria-label="Cemetery plot grid"
-        >
-          {layout.sections.map((box) => (
-            <g key={box.section.id} transform={`translate(${box.x}, ${box.y})`}>
-              <SectionBlock
-                section={box.section}
-                width={box.width}
-                height={box.height}
-                selectedPlotId={selectedPlotId}
-                availableOnly={availableOnly}
-                onSelectPlot={onSelectPlot}
-              />
-            </g>
-          ))}
-        </svg>
-      </TransformComponent>
-    </TransformWrapper>
+    <g>
+      {geometry.sections.map((placement) => (
+        <SectionBlock
+          key={placement.section.id}
+          placement={placement}
+          selectedPlotId={selectedPlotId}
+          availableOnly={availableOnly}
+          onSelectPlot={onSelectPlot}
+        />
+      ))}
+    </g>
   )
 }
