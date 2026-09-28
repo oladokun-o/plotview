@@ -4,9 +4,10 @@ import type { PaymentMethodId, PaymentReceipt } from "./payments/types"
 /**
  * Client state for the whole app, with no dependencies.
  *
- * Preferences (view, filter) persist to localStorage. The selected plot is not
- * persisted here: it lives in the URL (see useSelectedPlotUrl) so a selection
- * can be shared as a link.
+ * Preferences (view, filter) and confirmed reservations persist to
+ * localStorage, so a reserved plot stays reserved after a refresh. The
+ * selected plot is not persisted here: it lives in the URL (see
+ * useSelectedPlotUrl) so a selection can be shared as a link.
  *
  * During server rendering and hydration every reader sees DEFAULT_STATE, then
  * re-renders with the stored preferences, so there is never a hydration mismatch.
@@ -14,9 +15,9 @@ import type { PaymentMethodId, PaymentReceipt } from "./payments/types"
 
 export type MapView = "grid" | "sitemap"
 
-/** The reserve flow's steps, in order. */
+/** The reserve flow's numbered steps, in order. Confirmation follows them and is not counted. */
 export const RESERVE_STEPS = ["package", "details", "invoice", "payment"] as const
-export type ReserveStep = (typeof RESERVE_STEPS)[number]
+export type ReserveStep = (typeof RESERVE_STEPS)[number] | "confirmation"
 
 export interface BuyerDetails {
   fullName: string
@@ -37,6 +38,19 @@ export interface Reservation {
   receipt: PaymentReceipt | null
 }
 
+/** A paid reservation, as kept after the flow ends. Only what the confirmation shows: no contact details. */
+export interface ConfirmedReservation {
+  /** e.g. RES-2026-4821 */
+  reference: string
+  plotId: string
+  packageId: string
+  amount: number
+  currency: string
+  invoiceNumber: string
+  receipt: PaymentReceipt
+  buyerName: string
+}
+
 export interface AppState {
   view: MapView
   availableOnly: boolean
@@ -46,11 +60,16 @@ export interface AppState {
   reservation: Reservation | null
   /** Kept across plots and back navigation, so nothing has to be typed twice. */
   buyer: BuyerDetails
+  /** Every reservation made in this browser, newest last. */
+  reservations: ConfirmedReservation[]
 }
 
 type Preferences = Pick<AppState, "view" | "availableOnly">
 
 const STORAGE_KEY = "plotview:preferences:v1"
+const RESERVATIONS_KEY = "plotview:reservations:v1"
+/** Set by the arrival sequence (see MapShell); cleared on reset so the next visit plays it again. */
+const ARRIVAL_KEY = "plotview:arrived"
 
 const DEFAULT_STATE: AppState = {
   view: "grid",
@@ -59,6 +78,7 @@ const DEFAULT_STATE: AppState = {
   selectedPackageId: null,
   reservation: null,
   buyer: { fullName: "", phone: "", email: "", relationship: "" },
+  reservations: [],
 }
 
 let state: AppState = DEFAULT_STATE
@@ -98,12 +118,51 @@ function writePreferences(): void {
   }
 }
 
+function isConfirmedReservation(value: unknown): value is ConfirmedReservation {
+  if (typeof value !== "object" || value === null) {
+    return false
+  }
+  const record = value as Record<string, unknown>
+  const receipt = record.receipt as Record<string, unknown> | undefined
+  return (
+    typeof record.reference === "string" &&
+    typeof record.plotId === "string" &&
+    typeof record.packageId === "string" &&
+    typeof record.amount === "number" &&
+    typeof record.currency === "string" &&
+    typeof record.invoiceNumber === "string" &&
+    typeof record.buyerName === "string" &&
+    typeof receipt === "object" &&
+    receipt !== null &&
+    typeof receipt.transactionId === "string" &&
+    typeof receipt.paidAt === "string" &&
+    (receipt.method === "mtn-momo" || receipt.method === "orange-money" || receipt.method === "card")
+  )
+}
+
+function readReservations(): ConfirmedReservation[] {
+  try {
+    const parsed: unknown = JSON.parse(window.localStorage.getItem(RESERVATIONS_KEY) ?? "[]")
+    return Array.isArray(parsed) ? parsed.filter(isConfirmedReservation) : []
+  } catch {
+    return []
+  }
+}
+
+function writeReservations(): void {
+  try {
+    window.localStorage.setItem(RESERVATIONS_KEY, JSON.stringify(state.reservations))
+  } catch {
+    // Without storage, reservations last for the visit only.
+  }
+}
+
 function ensureHydrated(): void {
   if (hydrated || typeof window === "undefined") {
     return
   }
   hydrated = true
-  state = { ...state, ...readPreferences() }
+  state = { ...state, ...readPreferences(), reservations: readReservations() }
 }
 
 function setState(patch: Partial<AppState>): void {
@@ -111,6 +170,9 @@ function setState(patch: Partial<AppState>): void {
   state = { ...state, ...patch }
   if ("view" in patch || "availableOnly" in patch) {
     writePreferences()
+  }
+  if ("reservations" in patch) {
+    writeReservations()
   }
   listeners.forEach((listener) => listener())
 }
@@ -167,10 +229,30 @@ export const appActions = {
       setState({ reservation: { ...state.reservation, paymentMethod } })
     }
   },
-  recordPayment(receipt: PaymentReceipt) {
-    if (state.reservation) {
-      setState({ reservation: { ...state.reservation, receipt } })
+  /**
+   * Records a successful payment and the reservation it pays for, at once, so
+   * a paid plot is reserved even if the panel is closed straight away.
+   */
+  completeReservation(receipt: PaymentReceipt, confirmation: Omit<ConfirmedReservation, "receipt">) {
+    if (!state.reservation) {
+      return
     }
+    setState({
+      reservation: { ...state.reservation, receipt },
+      reservations: [...state.reservations.filter((item) => item.plotId !== confirmation.plotId), { ...confirmation, receipt }],
+    })
+  },
+  /** Clears everything this demo has stored, as if visiting for the first time. */
+  resetDemo() {
+    try {
+      window.localStorage.removeItem(RESERVATIONS_KEY)
+      window.localStorage.removeItem(STORAGE_KEY)
+      window.sessionStorage.removeItem(ARRIVAL_KEY)
+    } catch {
+      // Nothing stored to clear.
+    }
+    state = { ...DEFAULT_STATE }
+    listeners.forEach((listener) => listener())
   },
   endReservation() {
     setState({ reservation: null })

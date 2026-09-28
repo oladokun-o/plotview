@@ -24,6 +24,7 @@ interface DetailPanelProps {
   onSelectPackage: (packageId: string) => void
   onViewPlot: (plotId: string) => void
   onReserve: () => void
+  onBackToMap: () => void
   onClose: () => void
 }
 
@@ -39,6 +40,7 @@ export function DetailPanel({
   onSelectPackage,
   onViewPlot,
   onReserve,
+  onBackToMap,
   onClose,
 }: DetailPanelProps) {
   const headingId = useId()
@@ -73,6 +75,7 @@ export function DetailPanel({
                     buyer={buyer}
                     selectedPackage={selectedPackage}
                     onSelectPackage={onSelectPackage}
+                    onBackToMap={onBackToMap}
                     onClose={onClose}
                   />
                 </m.div>

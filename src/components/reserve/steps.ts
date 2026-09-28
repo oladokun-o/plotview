@@ -6,4 +6,5 @@ export const STEP_TITLE: Record<ReserveStep, string> = {
   details: "Your details",
   invoice: "Review the invoice",
   payment: "Payment",
+  confirmation: "Reservation confirmed",
 }

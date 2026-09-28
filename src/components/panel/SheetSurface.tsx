@@ -23,6 +23,7 @@ export interface SheetSurfaceProps {
   onSelectPackage: (packageId: string) => void
   onViewPlot: (plotId: string) => void
   onReserve: () => void
+  onBackToMap: () => void
   onClose: () => void
   /** The sheet's resting height, so the map can keep the plot visible above it. */
   onHeightChange: (height: number) => void
@@ -58,6 +59,7 @@ export function SheetSurface({
   onSelectPackage,
   onViewPlot,
   onReserve,
+  onBackToMap,
   onClose,
   onHeightChange,
 }: SheetSurfaceProps) {
@@ -224,6 +226,7 @@ export function SheetSurface({
             buyer={buyer}
             selectedPackage={selectedPackage}
             onSelectPackage={onSelectPackage}
+            onBackToMap={onBackToMap}
             onClose={onClose}
           />
         </>

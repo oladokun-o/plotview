@@ -1,3 +1,4 @@
+import type { Layout } from "@/types/layout"
 import type { BuyerDetails } from "./store"
 
 export type BuyerField = keyof BuyerDetails
@@ -27,6 +28,12 @@ export function createInvoiceNumber(date = new Date()): string {
   return `INV-${date.getFullYear()}-${digits}`
 }
 
+/** The reference families keep, such as RES-2026-4821. */
+export function createReservationReference(date = new Date()): string {
+  const digits = Math.floor(1000 + Math.random() * 9000)
+  return `RES-${date.getFullYear()}-${digits}`
+}
+
 export const RELATIONSHIP_OPTIONS = [
   "Spouse or partner",
   "Child",
@@ -36,3 +43,26 @@ export const RELATIONSHIP_OPTIONS = [
   "Friend",
   "Planning ahead for myself",
 ] as const
+
+/**
+ * The layout as this visitor sees it: plots they have reserved show as
+ * reserved. Sections without such plots are reused as they are.
+ */
+export function withReservations(layout: Layout, reservedPlotIds: ReadonlySet<string>): Layout {
+  if (reservedPlotIds.size === 0) {
+    return layout
+  }
+  return {
+    ...layout,
+    sections: layout.sections.map((section) =>
+      section.plots.some((plot) => reservedPlotIds.has(plot.id) && plot.status === "available")
+        ? {
+            ...section,
+            plots: section.plots.map((plot) =>
+              reservedPlotIds.has(plot.id) && plot.status === "available" ? { ...plot, status: "reserved" as const } : plot,
+            ),
+          }
+        : section,
+    ),
+  }
+}
