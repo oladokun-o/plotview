@@ -65,7 +65,7 @@ export function SearchBox({ layout, onPick, onDismiss, inputRef, className }: Se
 
   return (
     <div className={cn("relative", className)}>
-      <div className="flex h-11 items-center gap-2 rounded-md bg-sunken px-3 ring-1 ring-inset ring-line-subtle transition-shadow duration-150 focus-within:ring-2 focus-within:ring-focus">
+      <div className="flex h-11 items-center gap-2 rounded-md bg-sunken px-3 ring-1 ring-inset ring-line-control transition-shadow duration-150 focus-within:ring-2 focus-within:ring-focus">
         <Search aria-hidden="true" className="size-4 shrink-0 text-tertiary" />
         <input
           ref={localInputRef}
