@@ -37,6 +37,7 @@ export function MapScene({ layout, geometry, view, onKeyDown, arriving, morphing
         height={geometry.height}
         viewBox={`0 0 ${geometry.width} ${geometry.height}`}
         className="group/scene block overflow-visible"
+        data-view={view}
         data-arriving={arriving || undefined}
         data-morphing={morphing || undefined}
         role="group"

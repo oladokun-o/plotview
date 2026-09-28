@@ -5,6 +5,7 @@ import { TransformComponent, TransformWrapper, type ReactZoomPanPinchRef } from 
 import type { Rect } from "@/lib/geometry"
 import { cn } from "@/lib/cn"
 import { CAMERA_MAX_SCALE, CAMERA_MIN_SCALE, focusRect, frameRect, type CameraTransform, type Viewport } from "./camera"
+import { MapLoadingHint } from "./MapLoadingHint"
 
 /** Imperative camera controls, shared by both map views. */
 export interface CameraApi {
@@ -236,6 +237,7 @@ export function MapViewport({
           </div>
         </TransformComponent>
       </TransformWrapper>
+      {!ready && <MapLoadingHint />}
     </div>
   )
 }
