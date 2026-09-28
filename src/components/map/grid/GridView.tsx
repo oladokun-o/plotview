@@ -6,6 +6,7 @@ interface GridViewProps extends PlotInteractions {
   geometry: MapGeometry
   selectedPlotId: string | null
   tabStopPlotId: string | null
+  inkPlotId: string | null
   availableOnly: boolean
 }
 

@@ -9,6 +9,7 @@ interface SectionBlockProps extends PlotInteractions {
   order: number
   selectedPlotId: string | null
   tabStopPlotId: string | null
+  inkPlotId: string | null
   availableOnly: boolean
 }
 
@@ -18,6 +19,7 @@ export function SectionBlock({
   order,
   selectedPlotId,
   tabStopPlotId,
+  inkPlotId,
   availableOnly,
   ...interactions
 }: SectionBlockProps) {
@@ -80,6 +82,7 @@ export function SectionBlock({
             isDimmed={availableOnly && plot.plot.status !== "available"}
             arrivalDelay={700 + order * 110}
             isTabStop={plot.plot.id === tabStopPlotId}
+            isInking={plot.plot.id === inkPlotId}
             {...interactions}
           />
         ))}

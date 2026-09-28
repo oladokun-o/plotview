@@ -18,6 +18,8 @@ import { STEP_TITLE } from "./steps"
 
 export type PaymentStatus = "idle" | "pending" | "paid"
 
+const SUCCESS_PAUSE_MS = 1400
+
 interface PaymentStepProps {
   formId: string
   reservation: Reservation
@@ -25,6 +27,8 @@ interface PaymentStepProps {
   currency: string
   buyerPhone: string
   onStatusChange: (status: PaymentStatus) => void
+  /** Called once with the receipt when the payment succeeds. */
+  onPaid: (receipt: PaymentReceipt) => void
 }
 
 /**
@@ -32,7 +36,7 @@ interface PaymentStepProps {
  * details; the step talks to the method only through its PaymentProvider, so
  * swapping the simulated providers for real ones would not change this screen.
  */
-export function PaymentStep({ formId, reservation, amount, currency, buyerPhone, onStatusChange }: PaymentStepProps) {
+export function PaymentStep({ formId, reservation, amount, currency, buyerPhone, onStatusChange, onPaid }: PaymentStepProps) {
   const method = reservation.paymentMethod
   const [mobileDetails, setMobileDetails] = useState<MobileMoneyDetails>(() => mtnMoMoProvider.initialDetails({ phone: buyerPhone }))
   // Card details live only in this component while it is on screen: never in the store, never sent.
@@ -47,6 +51,15 @@ export function PaymentStep({ formId, reservation, amount, currency, buyerPhone,
   useEffect(() => {
     onStatusChange(status)
   }, [status, onStatusChange])
+
+  // After a moment to take in "Payment received", move on to the confirmation.
+  useEffect(() => {
+    if (status !== "paid") {
+      return
+    }
+    const timer = window.setTimeout(() => appActions.goToReserveStep("confirmation"), SUCCESS_PAUSE_MS)
+    return () => window.clearTimeout(timer)
+  }, [status])
 
   // Leaving the step (back, closing the panel) cancels a payment still in progress.
   useEffect(() => () => abortRef.current?.abort(), [])
@@ -64,7 +77,7 @@ export function PaymentStep({ formId, reservation, amount, currency, buyerPhone,
     const controller = new AbortController()
     abortRef.current = controller
     pay(controller.signal)
-      .then((receipt) => appActions.recordPayment(receipt))
+      .then((receipt) => onPaid(receipt))
       .catch((error: unknown) => {
         if (!(error instanceof DOMException && error.name === "AbortError")) {
           throw error

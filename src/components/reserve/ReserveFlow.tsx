@@ -7,9 +7,11 @@ import type { PlotDetailsModel } from "@/components/panel/types"
 import { Button } from "@/components/ui/Button"
 import { IconButton } from "@/components/ui/IconButton"
 import { formatPrice } from "@/lib/format"
-import { createInvoiceNumber } from "@/lib/reservation"
-import { RESERVE_STEPS, appActions, type BuyerDetails, type Reservation } from "@/lib/store"
+import type { PaymentReceipt } from "@/lib/payments"
+import { createInvoiceNumber, createReservationReference } from "@/lib/reservation"
+import { RESERVE_STEPS, appActions, useAppState, type BuyerDetails, type Reservation } from "@/lib/store"
 import type { Package } from "@/types/layout"
+import { ConfirmationStep } from "./ConfirmationStep"
 import { DetailsStep } from "./DetailsStep"
 import { InvoiceStep } from "./InvoiceStep"
 import { PackageStep } from "./PackageStep"
@@ -22,6 +24,8 @@ interface ReserveFlowProps {
   buyer: BuyerDetails
   selectedPackage: Package
   onSelectPackage: (packageId: string) => void
+  /** From the confirmation: back to the map, where the plot now shows as reserved. */
+  onBackToMap: () => void
   onClose: () => void
 }
 
@@ -43,12 +47,14 @@ export function ReserveFlow({
   buyer,
   selectedPackage,
   onSelectPackage,
+  onBackToMap,
   onClose,
 }: ReserveFlowProps) {
   const { plot, section, packages, currency } = model
   const { step } = reservation
   const formId = useId()
-  const stepIndex = RESERVE_STEPS.indexOf(step)
+  const stepIndex = step === "confirmation" ? RESERVE_STEPS.length : RESERVE_STEPS.indexOf(step)
+  const confirmation = useAppState((state) => state.reservations.find((item) => item.plotId === plot.id) ?? null)
   // Which way the last step change went, derived during render when the step changes.
   const [shownIndex, setShownIndex] = useState(stepIndex)
   const [direction, setDirection] = useState(1)
@@ -62,6 +68,19 @@ export function ReserveFlow({
   const handlePaymentStatus = useCallback((status: PaymentStatus) => setPaymentStatus(status), [])
   // Once money is moving (or has moved) there is no going back to edit the invoice.
   const canGoBack = step !== "payment" || paymentStatus === "idle"
+  const paidPackage = packages.find((pkg) => pkg.id === confirmation?.packageId) ?? selectedPackage
+
+  function handlePaid(receipt: PaymentReceipt) {
+    appActions.completeReservation(receipt, {
+      reference: createReservationReference(),
+      plotId: plot.id,
+      packageId: selectedPackage.id,
+      amount: total,
+      currency,
+      invoiceNumber: reservation.invoiceNumber ?? "",
+      buyerName: buyer.fullName.trim(),
+    })
+  }
 
   function goBack() {
     if (stepIndex === 0) {
@@ -80,15 +99,17 @@ export function ReserveFlow({
     <div className="flex min-h-0 flex-1 flex-col">
       <div className="border-b border-line-subtle p-5 pt-4 md:px-6 md:pt-5">
         <div className="flex items-center gap-2">
-          <IconButton
-            label={stepIndex === 0 ? "Back to plot details" : "Back to the previous step"}
-            variant="ghost"
-            size="sm"
-            icon={<ArrowLeft aria-hidden="true" className="size-4" />}
-            onClick={goBack}
-            disabled={!canGoBack}
-            className="-ml-2"
-          />
+          {step !== "confirmation" && (
+            <IconButton
+              label={stepIndex === 0 ? "Back to plot details" : "Back to the previous step"}
+              variant="ghost"
+              size="sm"
+              icon={<ArrowLeft aria-hidden="true" className="size-4" />}
+              onClick={goBack}
+              disabled={!canGoBack}
+              className="-ml-2"
+            />
+          )}
           <div className="min-w-0 flex-1">
             <h2 className="truncate font-display text-lg leading-tight text-primary md:text-xl">Reserve plot {plot.id}</h2>
             <p className="truncate text-xs text-tertiary">
@@ -151,7 +172,11 @@ export function ReserveFlow({
                 currency={currency}
                 buyerPhone={buyer.phone}
                 onStatusChange={handlePaymentStatus}
+                onPaid={handlePaid}
               />
+            )}
+            {step === "confirmation" && confirmation && (
+              <ConfirmationStep confirmation={confirmation} plot={plot} section={section} pkg={paidPackage} />
             )}
           </m.div>
         </AnimatePresence>
@@ -159,8 +184,12 @@ export function ReserveFlow({
 
       <div className="flex items-center gap-4 border-t border-line-subtle p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] md:px-6">
         <div className="min-w-0 flex-1">
-          <p className="truncate text-xs text-secondary">{selectedPackage.name}</p>
-          <p className="text-lg font-semibold text-primary tabular-nums">{formatPrice(total, currency)}</p>
+          <p className="truncate text-xs text-secondary">
+            {step === "confirmation" ? `Paid · ${paidPackage.name}` : selectedPackage.name}
+          </p>
+          <p className="text-lg font-semibold text-primary tabular-nums">
+            {formatPrice(confirmation && step === "confirmation" ? confirmation.amount : total, currency)}
+          </p>
         </div>
         {step === "package" && (
           <Button size="lg" onClick={() => appActions.goToReserveStep("details")}>
@@ -175,6 +204,11 @@ export function ReserveFlow({
         {step === "invoice" && (
           <Button size="lg" onClick={() => appActions.goToReserveStep("payment")}>
             Proceed to payment
+          </Button>
+        )}
+        {step === "confirmation" && (
+          <Button size="lg" onClick={onBackToMap}>
+            Back to map
           </Button>
         )}
         {step === "payment" && paymentStatus === "idle" && (

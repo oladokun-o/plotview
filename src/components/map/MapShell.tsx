@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic"
 import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent, type MouseEvent } from "react"
 import type { PlotDetailsModel } from "@/components/panel/types"
+import { ResetDemoControl } from "@/components/ResetDemoControl"
 import { SampleDataBadge } from "@/components/SampleDataBadge"
 import { cn } from "@/lib/cn"
 import { rectCenter, type Insets } from "@/lib/geometry"
@@ -10,6 +11,7 @@ import type { SearchResult } from "@/lib/search"
 import { appActions, getAppState, useAppState, type MapView } from "@/lib/store"
 import { useElementSize } from "@/lib/useElementSize"
 import { useMediaQuery } from "@/lib/useMediaQuery"
+import { withReservations } from "@/lib/reservation"
 import { useSelectedPlotUrl } from "@/lib/useSelectedPlotUrl"
 import type { Branding } from "@/types/branding"
 import type { Layout, PlotStatus } from "@/types/layout"
@@ -17,7 +19,6 @@ import { AvailableOnlyToggle } from "./AvailableOnlyToggle"
 import { focusRect, frameRect, type CameraTransform, type Viewport } from "./camera"
 import { computeGridLayout } from "./grid/gridLayout"
 import { Legend } from "./Legend"
-import type { MapGeometry } from "./mapGeometry"
 import { MapScene } from "./MapScene"
 import { MapViewport, type CameraApi } from "./MapViewport"
 import { toScreenPlots } from "./morph"
@@ -79,6 +80,8 @@ const ZOOM_NEAR_FROM = 24
 /** The arrival sequence plays once per browser session. */
 const ARRIVAL_KEY = "plotview:arrived"
 const ARRIVAL_MS = 2200
+/** How long the reserved plot's ink fill plays, matching motion.css. */
+const INK_MS = 1600
 
 function prefersReducedMotion(): boolean {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches
@@ -103,12 +106,18 @@ function shouldPlayArrival(): boolean {
  * The full-screen map and everything floating over it. Owns which view is shown,
  * where the camera goes, and how search, selection and the URL connect.
  */
-export function MapShell({ layout, branding }: MapShellProps) {
+export function MapShell({ layout: sourceLayout, branding }: MapShellProps) {
   const storedView = useAppState((state) => state.view)
   const availableOnly = useAppState((state) => state.availableOnly)
   const selectedPlotId = useAppState((state) => state.selectedPlotId)
   const selectedPackageId = useAppState((state) => state.selectedPackageId)
   const reservation = useAppState((state) => state.reservation)
+  const reservations = useAppState((state) => state.reservations)
+  // The layout as this visitor sees it: plots they reserved show as reserved everywhere.
+  const layout = useMemo(
+    () => withReservations(sourceLayout, new Set(reservations.map((item) => item.plotId))),
+    [sourceLayout, reservations],
+  )
   const buyer = useAppState((state) => state.buyer)
   const isDesktop = useMediaQuery("(min-width: 768px)")
   const [sheetHeight, setSheetHeight] = useState(0)
@@ -263,7 +272,10 @@ export function MapShell({ layout, branding }: MapShellProps) {
   const morphTarget = useRef<CameraTransform | null>(null)
 
   const camera = useRef<CameraApi | null>(null)
-  const lastGeometry = useRef<MapGeometry | null>(null)
+  // What the map's shape depends on. Status changes (a plot becoming reserved) rebuild the
+  // geometry too, but must not move the camera, so the camera compares this key instead.
+  const geometryKey = view === "grid" ? `grid:${gridAspect}` : "sitemap"
+  const lastGeometryKey = useRef<string | null>(null)
   const pendingFocus = useRef<string | null>(null)
 
   useSelectedPlotUrl(
@@ -281,9 +293,9 @@ export function MapShell({ layout, branding }: MapShellProps) {
     if (!api || viewport.width === 0 || viewport.height === 0) {
       return
     }
-    const firstFrame = lastGeometry.current === null
-    const geometryChanged = lastGeometry.current !== geometry
-    lastGeometry.current = geometry
+    const firstFrame = lastGeometryKey.current === null
+    const geometryChanged = lastGeometryKey.current !== geometryKey
+    lastGeometryKey.current = geometryKey
 
     const focusId = pendingFocus.current ?? (geometryChanged ? getAppState().selectedPlotId : null)
     pendingFocus.current = null
@@ -328,7 +340,8 @@ export function MapShell({ layout, branding }: MapShellProps) {
       frame = requestAnimationFrame(move)
     })
     return () => cancelAnimationFrame(frame)
-  }, [geometry, viewport])
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- geometry is read fresh; the key decides when to move
+  }, [geometryKey, viewport])
 
   const selectedPackage = layout.packages.find((pkg) => pkg.id === selectedPackageId) ?? layout.packages[0]
 
@@ -356,8 +369,9 @@ export function MapShell({ layout, branding }: MapShellProps) {
         }
       }
     }
-    return { ...selected, packages: layout.packages, currency: layout.site.currency, nearestAvailable }
-  }, [selectedPlotId, plotsById, geometry, layout])
+    const ownReservation = reservations.find((item) => item.plotId === selected.plot.id) ?? null
+    return { ...selected, packages: layout.packages, currency: layout.site.currency, nearestAvailable, ownReservation }
+  }, [selectedPlotId, plotsById, geometry, layout, reservations])
 
   // Camera moves that follow a selection wait for the render that opens the
   // panel or sheet, so they aim at the space actually left free and nothing
@@ -399,6 +413,26 @@ export function MapShell({ layout, branding }: MapShellProps) {
     appActions.selectPlot(plotId)
     setTabStopPlotId(plotId)
     setCameraRequest({ kind: "focus", plotId })
+  }
+
+  // Back from the confirmation: the flow closes, the plot stays selected, and its
+  // new status spreads through it like ink.
+  const [inkPlotId, setInkPlotId] = useState<string | null>(null)
+  useEffect(() => {
+    if (!inkPlotId) {
+      return
+    }
+    const timer = window.setTimeout(() => setInkPlotId(null), INK_MS)
+    return () => window.clearTimeout(timer)
+  }, [inkPlotId])
+
+  function handleBackToMap() {
+    const plotId = getAppState().reservation?.plotId
+    appActions.endReservation()
+    if (plotId) {
+      setInkPlotId(plotId)
+      setCameraRequest({ kind: "reveal", plotId })
+    }
   }
 
   function handleReserve() {
@@ -541,6 +575,7 @@ export function MapShell({ layout, branding }: MapShellProps) {
             view={view}
             selectedPlotId={selectedPlotId}
             tabStopPlotId={selectedPlotId ?? tabStopPlotId}
+            inkPlotId={inkPlotId}
             availableOnly={availableOnly}
             onSelect={handleSelectPlot}
             onHoverChange={setHoverPlotId}
@@ -597,9 +632,11 @@ export function MapShell({ layout, branding }: MapShellProps) {
 
       <div
         style={isDesktop ? { left: panelOpen ? panelSpace : EDGE } : undefined}
-        className="pointer-events-none absolute bottom-[max(0.75rem,env(safe-area-inset-bottom))] left-3 z-10 transition-[left] duration-300 ease-standard md:bottom-4"
+        className="pointer-events-none absolute bottom-[max(0.75rem,env(safe-area-inset-bottom))] left-3 z-10 flex items-center gap-2 transition-[left] duration-300 ease-standard md:bottom-4"
       >
         <SampleDataBadge />
+        {/* Hidden mid-reservation so a stray tap cannot throw away what was typed. */}
+        {!reservation && <ResetDemoControl />}
       </div>
 
       {isDesktop ? (
@@ -614,6 +651,7 @@ export function MapShell({ layout, branding }: MapShellProps) {
           onSelectPackage={appActions.selectPackage}
           onViewPlot={handleViewPlot}
           onReserve={handleReserve}
+          onBackToMap={handleBackToMap}
           onClose={() => appActions.selectPlot(null)}
         />
       ) : (
@@ -626,6 +664,7 @@ export function MapShell({ layout, branding }: MapShellProps) {
           onSelectPackage={appActions.selectPackage}
           onViewPlot={handleViewPlot}
           onReserve={handleReserve}
+          onBackToMap={handleBackToMap}
           onClose={() => appActions.selectPlot(null)}
           onHeightChange={setSheetHeight}
         />
